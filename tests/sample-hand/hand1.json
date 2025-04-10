@@ -25,14 +25,14 @@
         },
         {
             "action": "Bet",
-            "amount": 5,
+            "amount": 1,
             "player": "Dealer",
             "street": "flop",
             "actor": "hero"
         },
         {
             "action": "Call",
-            "amount": 5,
+            "amount": 1,
             "player": "Big Blind",
             "street": "flop",
             "actor": "villain"
@@ -46,28 +46,28 @@
         },
         {
             "action": "Bet",
-            "amount": 15,
+            "amount": 1,
             "player": "Dealer",
             "street": "turn",
             "actor": "hero"
         },
         {
             "action": "Raise",
-            "amount": 45,
+            "amount": 3,
             "player": "Big Blind",
             "street": "turn",
             "actor": "villain"
         },
         {
             "action": "Call",
-            "amount": 45,
+            "amount": 3,
             "player": "Dealer",
             "street": "turn",
             "actor": "hero"
         },
         {
             "action": "Bet",
-            "amount": 150,
+            "amount": 1.25,
             "player": "Big Blind",
             "street": "river",
             "actor": "villain"

@@ -34,6 +34,6 @@ class FullModel(nn.Module):
     ) -> torch.Tensor:
         x_enc_actions = self.moduleDict["encoder_actions"](x_actions)
         x_enc_cards = self.moduleDict["encoder_cards"](x_cards)
-        x_attended = self.moduleDict["cross_attention"](x_enc_actions, x_enc_actions)
+        x_attended = self.moduleDict["cross_attention"](x_enc_actions, x_enc_cards)
         predicted_ev = self.moduleDict["output_mlp"](x_attended)
         return predicted_ev

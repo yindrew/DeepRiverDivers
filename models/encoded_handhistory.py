@@ -1,21 +1,23 @@
 from typing import List, Dict
 import numpy as np
 import json
-from handhistory import HandHistory, Action, Player, Street, Actor, GameAction
+from models.handhistory import HandHistory, Action, Player, Street, Actor, GameAction
 
 class EncodedHandHistory:
     """
     Functional class for encoding HandHistory objects into neural network input format.
     All methods are static or class methods, so no instantiation is required.
     """
+
+    # Preflop bet size buckets
     
-    # Bet size buckets (as percentages of pot)
-    BET_SIZE_BUCKETS = [0.2, 0.5, 0.8, 1.0, 2.0, float('inf')]
+    # Postflop bet size buckets (as percentages of pot)
+    POSTFLOP_BET_BUCKETS = [0.25, 0.5, 0.75, 1.0, 1.5, float('inf')]
     
-    # Mapping dictionaries
+    # Only need mappings for card notation
     RANK_MAP = {
-        '2': 0, '3': 1, '4': 2, '5': 3, '6': 4, '7': 5, '8': 6, '9': 7, 
-        'T': 8, '10': 8, 'J': 9, 'Q': 10, 'K': 11, 'A': 12
+        '2': 0, '3': 1, '4': 2, '5': 3, '6': 4, '7': 5, '8': 6,
+        '9': 7, 'T': 8, '10': 8, 'J': 9, 'Q': 10, 'K': 11, 'A': 12
     }
     
     SUIT_MAP = {
@@ -25,30 +27,6 @@ class EncodedHandHistory:
         'c': 3   # Club
     }
     
-    PLAYER_MAP = {
-        Player.UTG: 0,
-        Player.UTG_PLUS_1: 1,
-        Player.UTG_PLUS_2: 2,
-        Player.DEALER: 3,
-        Player.SMALL_BLIND: 4,
-        Player.BIG_BLIND: 5
-    }
-    
-    ACTION_MAP = {
-        Action.FOLD: 0,
-        Action.CHECK: 1,
-        Action.CALL: 2,
-        Action.RAISE: 3,
-        Action.BET: 4
-    }
-    
-    STREET_MAP = {
-        Street.PREFLOP: 0,
-        Street.FLOP: 1,
-        Street.TURN: 2,
-        Street.RIVER: 3
-    }
-    
     CARD_STREET_MAP = {
         'hole': 0,
         'flop': 1,
@@ -56,13 +34,6 @@ class EncodedHandHistory:
         'river': 3
     }
 
-    # Action encoding dimensions
-    ACTION_DIM = 22 
-    
-    # Card encoding dimensions
-    RANK_DIM = len(RANK_MAP)    # Rank encoding dimension (2-10, J, Q, K, A)
-    SUIT_DIM = len(SUIT_MAP)    # Suit encoding dimension
-    CARD_STREET_DIM = len(CARD_STREET_MAP)  # Street encoding dimension for cards
     
     @classmethod
     def encode_hand_history(cls, hand_history: HandHistory) -> Dict[str, np.ndarray]:
@@ -105,44 +76,37 @@ class EncodedHandHistory:
             game_log: A list of GameAction objects
             
         Returns:
-            A numpy array of shape (T, 22) where T is the number of actions
+            A numpy array of shape (T, 5) where T is the number of actions
+            Each row contains [actor_idx, action_idx, bet_size_bucket_idx, street_idx, position_idx]
         """
         encoded = []
         
         for action in game_log:
-            # Actor: binary flag (1 for hero, 0 for villain)
-            actor_encoding = 1 if action.actor == Actor.HERO else 0
+            # Get indices directly from enum values
+            actor_idx = action.actor.value
+            action_idx = action.action.value
+            street_idx = action.street.value
+            position_idx = action.player.value
             
-            # Action Type: 5-way one-hot vector
-            action_encoding = np.zeros(5)
-            action_idx = EncodedHandHistory.ACTION_MAP[action.action]
-            action_encoding[action_idx] = 1
+
+            # For preflop, ignore bet sizing
+            if action.street == Street.PREFLOP:
+                bet_size_bucket_idx = 0  # Default value for preflop
+            else:
+                # Postflop uses pot percentage buckets
+                bet_size = action.amount
+                bet_size_bucket_idx = 0
+                for i, threshold in enumerate(EncodedHandHistory.POSTFLOP_BET_BUCKETS):
+                    if bet_size <= threshold:
+                        bet_size_bucket_idx = i
+                        break
             
-            # Bet Size Bucket: 6-dimensional one-hot vector
-            bet_size_encoding = np.zeros(6)
-            bet_size = action.amount
-            for i, threshold in enumerate(EncodedHandHistory.BET_SIZE_BUCKETS):
-                if bet_size <= threshold:
-                    bet_size_encoding[i] = 1
-                    break
-            
-            # Street: 4-way one-hot vector
-            street_encoding = np.zeros(4)
-            street_idx = EncodedHandHistory.STREET_MAP[action.street]
-            street_encoding[street_idx] = 1
-            
-            # Position: 6-way one-hot vector
-            position_encoding = np.zeros(6)
-            position_idx = EncodedHandHistory.PLAYER_MAP[action.player]
-            position_encoding[position_idx] = 1
-            
-            # Concatenate all encodings into a 22-dimensional vector
-            action_vector = np.concatenate([
-                [actor_encoding],
-                action_encoding,
-                bet_size_encoding,
-                street_encoding,
-                position_encoding
+            action_vector = np.array([
+                actor_idx,
+                action_idx,
+                bet_size_bucket_idx,
+                street_idx,
+                position_idx
             ])
             
             encoded.append(action_vector)
@@ -150,7 +114,7 @@ class EncodedHandHistory:
         return np.array(encoded)
     
     @staticmethod
-    def _encode_cards(hand: List[str], board: List[str]) -> Dict[str, np.ndarray]:
+    def _encode_cards(hand: List[str], board: List[str]) -> np.ndarray:
         """
         Encode the hole cards and board cards into the format needed for the neural network.
         
@@ -159,74 +123,45 @@ class EncodedHandHistory:
             board: A list of strings representing the board cards
             
         Returns:
-            A dictionary containing encoded hole cards and board cards
+            A numpy array of shape (7, 3) where 7 is the total number of cards
+            Each row contains [rank_idx, suit_idx, street_idx]
         """
+        encoded_cards = []
+        
         # Encode hole cards
-        hole_cards = []
         for card in hand:
-            # Handle multi-character ranks like '10'
-            if len(card) > 2:
-                rank = card[:-1]  # Everything except the last character (suit)
-                suit = card[-1]   # Last character (suit)
-            else:
-                rank = card[0]
-                suit = card[1]
-                
-            rank_encoding = np.zeros(EncodedHandHistory.RANK_DIM)
+            rank = card[0]
+            suit = card[1]
+            
+            # Get indices directly
             rank_idx = EncodedHandHistory.RANK_MAP[rank]
-            rank_encoding[rank_idx] = 1
-            
-            suit_encoding = np.zeros(EncodedHandHistory.SUIT_DIM)
             suit_idx = EncodedHandHistory.SUIT_MAP[suit]
-            suit_encoding[suit_idx] = 1
+            street_idx = EncodedHandHistory.CARD_STREET_MAP['hole']
             
-            street_encoding = np.zeros(EncodedHandHistory.CARD_STREET_DIM)
-            street_encoding[EncodedHandHistory.CARD_STREET_MAP['hole']] = 1
-            
-            # Add a dimension to indicate this is a hole card (1)
-            is_hole_card = 1
-            
-            card_encoding = np.concatenate([rank_encoding, suit_encoding, street_encoding, [is_hole_card]])
-            hole_cards.append(card_encoding)
+            card_encoding = np.array([rank_idx, suit_idx, street_idx])
+            encoded_cards.append(card_encoding)
         
         # Encode board cards
-        board_cards = []
         for i, card in enumerate(board):
-            # Handle multi-character ranks like '10'
-            if len(card) > 2:
-                rank = card[:-1]  # Everything except the last character (suit)
-                suit = card[-1]   # Last character (suit)
-            else:
-                rank = card[0]
-                suit = card[1]
-                
-            rank_encoding = np.zeros(EncodedHandHistory.RANK_DIM)
+            rank = card[0]
+            suit = card[1]
+            
+            # Get indices directly
             rank_idx = EncodedHandHistory.RANK_MAP[rank]
-            rank_encoding[rank_idx] = 1
-            
-            suit_encoding = np.zeros(EncodedHandHistory.SUIT_DIM)
             suit_idx = EncodedHandHistory.SUIT_MAP[suit]
-            suit_encoding[suit_idx] = 1
             
-            street_encoding = np.zeros(EncodedHandHistory.CARD_STREET_DIM)
-            # Determine which street this card belongs to
+            # Determine street based on position in board
             if i < 3:
-                street_encoding[EncodedHandHistory.CARD_STREET_MAP['flop']] = 1
+                street_idx = EncodedHandHistory.CARD_STREET_MAP['flop']
             elif i == 3:
-                street_encoding[EncodedHandHistory.CARD_STREET_MAP['turn']] = 1
+                street_idx = EncodedHandHistory.CARD_STREET_MAP['turn']
             else:
-                street_encoding[EncodedHandHistory.CARD_STREET_MAP['river']] = 1
+                street_idx = EncodedHandHistory.CARD_STREET_MAP['river']
             
-            # Add a dimension to indicate this is a board card (0)
-            is_hole_card = 0
-            
-            card_encoding = np.concatenate([rank_encoding, suit_encoding, street_encoding, [is_hole_card]])
-            board_cards.append(card_encoding)
+            card_encoding = np.array([rank_idx, suit_idx, street_idx])
+            encoded_cards.append(card_encoding)
         
-        return {
-            'hole_cards': np.array(hole_cards),
-            'board_cards': np.array(board_cards)
-        }
+        return np.array(encoded_cards)
     
     @classmethod
     def from_json(cls, json_file: str) -> Dict[str, np.ndarray]:

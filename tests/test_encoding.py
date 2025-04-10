@@ -6,7 +6,7 @@ Script to convert a hand history JSON file to an EncodedHandHistory object.
 import sys
 import os
 import numpy as np
-from encoded_handhistory import EncodedHandHistory
+from models.encoded_handhistory import EncodedHandHistory
 
 def main():
     # Get the JSON file path from command line arguments or use default

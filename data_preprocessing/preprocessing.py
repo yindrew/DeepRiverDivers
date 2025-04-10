@@ -5,7 +5,7 @@ from glob import glob
 import numpy as np
 
 # Predefined bet size buckets (as percentages of the pot)
-BET_SIZE_BUCKETS = [0.25, 0.5, 0.75, 1.0, 1.5, 2.0]  # 25%, 50%, 75%, 100%, 150%, 200%
+BET_SIZE_BUCKETS = [0.2, 0.5, 0.8, 1.0, 2.0, float('inf')]  # 0-20%, 20-50%, 50-80%, 80-100%, 100-200%, >200%
 
 def convert_to_serializable(obj):
     """Convert numpy types to native Python types for JSON serialization."""
@@ -21,8 +21,12 @@ def get_bucket_index(bet_size_pct):
     """Convert a bet size percentage to the nearest bucket index."""
     if bet_size_pct == 0:  # Checks or folds
         return 0
-    # Find the bucket with the smallest absolute difference
-    return int(np.argmin([abs(bet_size_pct - bucket) for bucket in BET_SIZE_BUCKETS]))
+    # Find the first bucket that the bet size is less than or equal to
+    for i, threshold in enumerate(BET_SIZE_BUCKETS):
+        if bet_size_pct <= threshold:
+            return i
+    # If bet size is larger than all thresholds, return the last bucket
+    return len(BET_SIZE_BUCKETS) - 1
 
 def parse_hand_history(file_content, filename=None):
     """Parse a single poker hand history file with bet size bucketing."""
@@ -141,16 +145,19 @@ def save_to_json(data, output_file):
 if __name__ == "__main__":
     # Test bucketing function
     test_cases = [
-        (0.32, 0),    # 32% → 25% bucket (index 0)
-        (0.45, 1),    # 45% → 50% bucket (index 1)
-        (1.25, 3),    # 125% → 100% bucket (index 3)
-        (1.8, 4)      # 180% → 150% bucket (index 4)
+        (0.15, 0),    # 15% → 0-20% bucket (index 0)
+        (0.35, 1),    # 35% → 20-50% bucket (index 1)
+        (0.65, 2),    # 65% → 50-80% bucket (index 2)
+        (0.85, 3),    # 85% → 80-100% bucket (index 3)
+        (1.5, 4),     # 150% → 100-200% bucket (index 4)
+        (2.5, 5)      # 250% → >200% bucket (index 5)
     ]
     
     print("Bucket Testing:")
     for bet_pct, expected_idx in test_cases:
         idx = get_bucket_index(bet_pct)
-        print(f"{bet_pct*100:.1f}% → Bucket {idx} ({BET_SIZE_BUCKETS[idx]*100}%) {'✓' if idx == expected_idx else '✗'}")
+        bucket_range = f"0-20%" if idx == 0 else f"{BET_SIZE_BUCKETS[idx-1]*100}-{BET_SIZE_BUCKETS[idx]*100}%" if idx < 5 else ">200%"
+        print(f"{bet_pct*100:.1f}% → Bucket {idx} ({bucket_range}) {'✓' if idx == expected_idx else '✗'}")
     
     # Process real data
     folder_path = "Ignition2.0"

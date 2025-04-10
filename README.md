@@ -12,7 +12,7 @@ Each action is represented using the following components:
 - **Action Type**: 5-way embedding mapped to 4 dimensions
   (`fold`, `check`, `call`, `raise`, `bet`)
 - **Bet Size Bucket**: 6-dimensional one-hot vector
-  (`0-20%`, `20-50%`, `50-100%`, `100-200%`, `>200%`)
+  (`0-20%`, `20-50%`, `50-80%`, `80-100%`,`100-200%`, `>200%`)
 - **Street**: 4-way embedding mapped to 4 dimensions (`preflop`, `flop`, `turn`, `river`)
 - **Position**: 6-way embedding mapped to 4 dimensions (`LJ`, `HJ`, `CO`, `BU`, `SB`, `BB`)
 

@@ -1,0 +1,77 @@
+CO 2.5 BU 7.5 CO c.
+
+Th8h7h. x. 5.45. c. 
+6h. x. 23.45. c. 
+2h. x. 63.6.
+
+AQhh 78.23
+AJhh 84.83
+A9hh 137.3
+A5hh 77.97
+K5hh 5.91
+K9hh 137.3
+KJhh 6.05
+K9h 137.3
+K5hh 5.91
+AQsq -1.43
+AQhs 69.73 
+AQhd 69.73
+AQhc 69.73
+AQdh -1.43
+AQch -1.43
+KQsh 0
+KQhs 0
+KQhd 0
+KQhc 0
+KQdh 0
+KQch 0
+
+QJhh 3.67
+Q9hh 137.3
+AJsh 0
+AJdh 0
+AJch 0
+KJsh 1.36
+KJhs 1.42
+KJhd 1.42
+KJhc 1.42
+KJdh 1.36
+KJch 1.36
+JJsh .5
+JJhc .5
+JJhc .5
+J9ss -31.49
+J9hh 137.3
+J9dd -31.49
+J9cc -31.49
+TTsc -30.73
+TTsd -30.73
+TTdc -30.73
+T8ss -30.89
+T8dd -30.78
+T8cc -30.78
+99sh 137.3
+99hd 137.3
+99hc 137.3
+88sd -30.84
+88sc -30.84
+88dc -30.84
+77sd -30.84
+77sc -30.84
+77dc -30.84
+55sh 0
+55hc 0
+55hd 0
+54hh 108.69
+44sh 0
+44hd 0
+44hc 0
+33sh 2.43
+33hc 2.43
+33hd 2.43
+
+
+
+60 individual hands for $15 
+
+

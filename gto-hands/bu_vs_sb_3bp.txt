@@ -1,0 +1,103 @@
+BTN 2.5 SB 12. BTN c.
+
+7s6h4s. x. 5. c. 
+4h. x. 17.5 c. 
+2c. x. all in 65.5. 
+
+AAsh 86.03 
+AAsd 86
+AAhd 85.99
+AAsc 86.
+AAhc 85.99
+AKss 0
+AKhh 0
+AKdd 0
+AKcc 0
+AQss 0
+AQhh 0
+AQdd -1.13
+AQcc -1.13
+AJss 0
+AJhh 0
+ATss -1.19
+AThh 0
+A9hh 3.82
+A8ss 10.91
+A8hh 8.29
+A8dd 9.45
+A8cc 9.45
+A7dd 11.98
+A7hh 10.88
+A8cc 11.98
+A6ss 8.54
+A6dd 9.85
+A6cc 9.85
+A5ss -0.21
+A5hh -0.81
+A5dd 0
+A5cc 0
+A3hh -.8
+AKsh 0
+Aksd 
+AKsc 0
+AKhs 0
+AKhd 0
+AKhc 0
+AKds 0
+AKdh 0
+AKdc 0
+AKcs 0
+AKch 0
+AKcd 0
+KKsh 77.32
+KQss -9.75
+KQhh -10.2
+KJss -9.62 
+KJhh -10.66
+KTss -15.27
+KThh -14.16
+K9ss -17.96
+K9hh -17.6
+K8ss -14.56
+K8hh -16.01
+K6ss 4.12
+K6dd 5.42
+K6cc 5.42
+AQsh 0
+AQsd -1.13
+AQsc -1.13
+AQhs 0
+AQhd -1.13
+AQhc -1.13
+AQds 0
+AQdh 0
+AQdc -1.13
+AQcs 0
+AQch 0
+AQcd -1.13
+QJss -34.02
+QTss -44.28
+QThh -42.43
+Q9ss -45.65
+AJsh 0
+AJsd -2.36
+AJsc -2.36
+AJhs 0
+AJhd -2.35
+AJhc -2.35
+JTss -53.7
+JThh -52.5
+ATsh 0
+AThs -1.19
+88sh 32.94 
+88hd 32.94
+88hc 32.94
+88dc 33.33
+77hd 128.93
+77hc 128.93
+77dc 128.92
+66sc 106.36
+66sd 106.36
+66dc 106.31
+
+

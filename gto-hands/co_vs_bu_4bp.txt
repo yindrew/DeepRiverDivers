@@ -1,0 +1,70 @@
+CO 2.5 BTN 7.5 CO 22. BTN c.
+
+QdJd5c. 10.25. c. 
+4s. x. 24.7. c. 
+Kh. 43. 
+
+AAsh 0
+AAsd 0
+AAhd 0
+AAsc 0
+AAhc 0
+AAdc 0
+AKss 14.71
+AKdd 1.58
+AKcc 7.92
+AQss 0
+AQhh 0
+AQcc 0
+AJss -.77
+AJhh -.57
+AJcc -.57
+ATss 157.8
+AThh 157.8
+ATdd 157.8
+ATcc 157.8
+A5ss -38.65
+A5hh -38.65
+A5dd -38.65
+A3dd -38.65
+KKsd 110.19
+KKsc 99.98
+KKdc 114.34
+KKsc 99.88
+KKdc 114.34
+KQss 51.54
+KQcc 60.75
+KJcc 37.99
+KTss 0
+KTdd 9.29
+KTcc 1.22
+AQsh 0
+AQhs 0
+AQds 0
+AQcs 0
+AQdh 0
+AQch 0
+AQsc 0
+AQhc 0
+AQdc 0
+QQsh 120.49
+QQsc 120.49
+QQhc 120.49
+QJss 9.85
+QJhh 6.81
+QHcc 6.28
+88sd -43.09
+88hd -43.09
+88dc -43.09
+77sd -38.7
+77hd -38.7
+77dc -38.71
+66sd -38.7
+66hd -38.7
+66dc -38.71
+65ss -38.7
+65hh -38.71
+65dd -38.7
+55sd 74.42
+55hd 74.42
+

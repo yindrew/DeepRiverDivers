@@ -1,0 +1,67 @@
+UTG 2. SB 10. UTG c. 
+
+Td7h3h. 10.5 c. 
+Qc 13.85 c. 
+4c. x. all in 65.65.
+
+AAsc 50.45
+AKhh -32.68
+AKcc -19.29
+AQss 22.83
+AJhh -49.86
+ATss -0.08
+AThh 3.76
+ATcc 0
+ATcc -5.09
+A4hh -4.47
+A3ss -1.93
+A3dd 0
+A3cc -5.12
+AsKh -26.88
+AKch -27.67
+KJhh -53.58
+KTss 2.13
+KThh 0
+KTcc 0
+K7ss -0.01
+K7cc -5.52
+AQsh 16.4
+AQch 18.96
+QJss 19.84
+QJhh 8.49
+QJdd 7.12
+QTss 88.95
+QThh 93.11
+JJsh -7.29
+JJhd -10.34
+JJhc -7.29
+JTss 3.81
+JThh -1.49
+JTcc 6.88
+TTsh 77.73
+TThc 77.89
+T9ss 2.11
+T9cc 5.14
+88sh 0
+88hd 0
+88hc 0
+87ss 0.22
+87dd 0.22
+87cc 0.22
+77sd 64.44
+77sc 64.44
+77dc 64.44
+65ss 126.3
+65dd 126.3
+65cc 126.3
+55sh 0
+55hc 0
+55hd 0
+54ss 3.02
+54hh -1.16
+54dd 3.02
+44sh 64.36
+44hd 64.36
+22sh 1.87
+22hd 1.87
+22hc 1.87

@@ -1,0 +1,37 @@
+CO 2.3 BU 7.5 CO c. 
+
+QsQcJd x. 5.45. c. 
+8s. x. 13.7 c. 
+Ah. x. 73.35
+
+AQdd 116.01
+AJss 0
+AJcc -1.67
+ATss -0.94
+KQhh 0
+KQdd 0
+KJss -35.05
+KJhh -36.64
+KJcc -34.63
+QJhh 77.83
+QThh 6.05
+QTdd 15.33
+JJsh 67.44
+JJsc 66.4
+JJhc 69.37
+JTss -33.85
+JThh -33.77
+JTcc -35.61
+TTsh -38.51
+TTsd -38.18
+TThd -38.28
+TTsc -39.45
+TThc -39.55
+TTdc -39.24
+99sh -52
+99sd -49.57
+99hd -52.24
+99hc -49.06
+88hd 53.51
+88hc 53.51
+88dc 53.51

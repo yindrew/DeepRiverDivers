@@ -1,0 +1,57 @@
+UTG 2. HJ 6.5. UTG c. 
+
+Td7h4c. x. 10.9. c. 
+2c. x. 27.2 c. 
+Kh. x. all in 55. 
+
+AQcc -38.41
+ATss 0
+AThh 0
+ATcc -13.74
+A4ss -3.94
+A4hh -3.97
+A4dd -.16
+AKsd 84.49
+AKsc 84.44
+AKhd 83.19
+AKds 86.6
+AKdc 87.3
+KTss 126.35
+KTcc 125.51
+QQsh 0
+QQsd 0
+QQhd 0
+QQsc 0
+QQhc 0
+QQdc 0
+JJsh 2.76
+JJsd 2.77
+JJhd 2.56
+JJsc .2
+JJhc 0
+JJdc 0
+JTss .14
+JThh -.16
+JTcc -1.08
+TTsh 119.23
+TTsc 118.51
+TThc 118.51
+T9ss .1
+T9hh 0
+T9cc 1.77
+78ss -.08
+78dd -.09
+78cc -.08
+77sd 115.63
+77sc 115.63
+77dc 115.63
+76ss -.46
+76dd -.3
+76cc -.08
+65ss -55.22
+65hh -55
+65dd -55.11
+65cc -54.96
+44sh 112.38
+44sd 112.65
+44hd 112.7

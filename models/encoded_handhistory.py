@@ -1,8 +1,14 @@
 import json
+from typing import TypedDict
 
 import torch
 
 from models.handhistory import Action, Actor, GameAction, HandHistory, Player, Street
+
+
+class EncodedHandHistoryType(TypedDict):
+    actions: torch.LongTensor
+    cards: torch.LongTensor
 
 
 class EncodedHandHistory:
@@ -39,9 +45,7 @@ class EncodedHandHistory:
     CARD_STREET_MAP = {"hole": 0, "flop": 1, "turn": 2, "river": 3}
 
     @classmethod
-    def encode_hand_history(
-        cls, hand_history: HandHistory
-    ) -> dict[str, torch.LongTensor]:
+    def encode_hand_history(cls, hand_history: HandHistory) -> EncodedHandHistoryType:
         """
         Encode a HandHistory object into the format needed for the neural network.
 
@@ -59,7 +63,7 @@ class EncodedHandHistory:
     @classmethod
     def encode_batch(
         cls, hand_histories: list[HandHistory]
-    ) -> list[dict[str, torch.LongTensor]]:
+    ) -> list[EncodedHandHistoryType]:
         """
         Encode a batch of HandHistory objects.
 
@@ -169,7 +173,7 @@ class EncodedHandHistory:
             return torch.stack(encoded_cards)
 
     @classmethod
-    def from_json(cls, json_file: str) -> dict[str, torch.LongTensor]:
+    def from_json(cls, json_file: str) -> EncodedHandHistoryType:
         """
         Create encoded hand history from a JSON file.
 
@@ -205,4 +209,3 @@ class EncodedHandHistory:
 
         hand_history = HandHistory(hand=hand, board=board, gameLog=game_log)
         return cls.encode_hand_history(hand_history)
-

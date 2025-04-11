@@ -1,8 +1,5 @@
 from pathlib import Path
 
-import numpy as np
-import pytest
-
 from models.encoded_handhistory import EncodedHandHistory
 from models.handhistory import Action, Actor, GameAction, HandHistory, Player, Street
 
@@ -250,7 +247,7 @@ class TestEncodedHandHistory:
     def test_sample_hand(self):
         """Test encoding of the sample hand from hand1.json"""
         test_dir = Path(__file__).parent
-        sample_json_file = str((test_dir / "sample-hand") / "hand1.json")
+        sample_json_file = str(test_dir / "sample-hand" / "hand1.json")
         encoded = EncodedHandHistory.from_json(sample_json_file)
 
         # Check action encoding
@@ -347,4 +344,3 @@ class TestEncodedHandHistory:
         assert cards[6][0] == EncodedHandHistory.RANK_MAP["2"]  # 2s
         assert cards[6][1] == EncodedHandHistory.SUIT_MAP["s"]
         assert cards[6][2] == EncodedHandHistory.CARD_STREET_MAP["river"]
-

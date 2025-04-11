@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from typing import List
 from enum import Enum
 
 
@@ -43,6 +42,7 @@ class GameAction:
 
 @dataclass
 class HandHistory:
-    hand: List[str]
-    board: List[str]
-    gameLog: List[GameAction]
+    hand: list[str]
+    board: list[str]
+    gameLog: list[GameAction]
+

@@ -11,6 +11,8 @@ class OutputMLP(nn.Module):
     Forward output shape: (B, )
     """
 
+    model: nn.Module
+
     def __init__(self) -> None:
         super().__init__()
         self.model = nn.Sequential(

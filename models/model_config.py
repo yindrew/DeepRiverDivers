@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import TypedDict
+from typing import Literal, TypedDict
 
 
 class ActionEncoderConfig(TypedDict):
@@ -33,9 +33,46 @@ class CrossAttentionConfig(TypedDict):
     d_model: int
 
 
+class OutputMLPConfig(TypedDict):
+    d_model: int
+
+
+class TrainingProcessConfig(TypedDict):
+    batch_size: int
+    num_epochs: int
+    learning_rate: float
+    weight_decay: float
+    optimizer: Literal["Adam", "SGD", "AdamW"]
+    momentum: float
+    phase: Literal["GTO", "Human"]
+
+
+class GeneralConfig(TypedDict):
+    device: Literal["cpu", "cuda"]
+    seed: int
+
+
 @dataclass
 class ModelConfig:
     """Configuration class for model hyperparameters."""
+
+    # General Config
+    general: GeneralConfig = field(
+        default_factory=lambda: {"device": "cpu", "seed": 42069}
+    )
+
+    # Training Process Config
+    training_process: TrainingProcessConfig = field(
+        default_factory=lambda: {
+            "batch_size": 32,
+            "num_epochs": 6,
+            "learning_rate": 1e-3,
+            "weight_decay": 0,
+            "optimizer": "Adam",
+            "momentum": 0,
+            "phase": "GTO",
+        }
+    )
 
     # Action Sequence Encoder
     action_encoder: ActionEncoderConfig = field(
@@ -74,3 +111,20 @@ class ModelConfig:
         default_factory=lambda: {"num_heads": 4, "d_model": 32}
     )
 
+    # OutputMLP
+    output_mlp: OutputMLPConfig = field(default_factory=lambda: {"d_model": 32})
+
+    def __post_init__(self):
+        self.validate_config()
+
+    def validate_config(self):
+        # tests for d_model keys - update to reflect intended usage of d_model
+        assert (
+            self.action_encoder["d_model"] == self.card_encoder["d_model"]
+        ), "expect d_model to be the same across action and card configs"
+        assert (
+            self.action_encoder["d_model"] == self.cross_attention["d_model"]
+        ), "expect d_model to be the same across action and cross attention configs"
+        assert (
+            self.action_encoder["d_model"] == self.output_mlp["d_model"]
+        ), "expect d_model to be the same across action and cross attention configs"

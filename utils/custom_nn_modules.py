@@ -1,3 +1,4 @@
+from collections.abc import Sequence
 from typing import override
 
 import torch
@@ -45,7 +46,7 @@ class CombinedEncoder(nn.Module):
     and apply to each slice of tensor.
     """
 
-    def __init__(self, encoder_list: list[nn.Module]) -> None:
+    def __init__(self, encoder_list: Sequence[nn.Module]) -> None:
         super().__init__()
         self.encoder_module_list: nn.ModuleList = nn.ModuleList(
             [encoder for encoder in encoder_list]

@@ -1,7 +1,8 @@
 from collections.abc import Sequence
 from pathlib import Path
-from typing import TypedDict, override
+from typing import Literal, TypedDict, override
 
+import polars as pl
 import torch
 from torch.utils.data import Dataset
 
@@ -40,12 +41,30 @@ class JSONDatasetBase(Dataset[JSONDatasetType]):
     expected_ev_list: list[float]
     training_files_list: list[str]
 
-    def __init__(self, config: ModelConfig = ModelConfig()):
-        self.root_dir = Path(__file__).parent.parent / "tests" / "sample-hand"
-        self.expected_ev_list = [
-            -0.42069 + i * 0.002 for i in range(500)
-        ]  # should depend on config (which phase of training)
-        self.training_files_list = ["hand1.json"] * 500
+    def __init__(
+        self,
+        config: ModelConfig = ModelConfig(),
+        train_or_validate: Literal["Training", "Validation"] = "Training",
+    ):
+        phase = config.training_process["phase"]  # GTO or Human
+        self.root_dir = (
+            Path(__file__).parent.parent / "data" / f"{train_or_validate.lower()}_set"
+        )
+        df: pl.DataFrame = pl.read_csv(
+            source=str(self.root_dir / "metadata.csv"),
+            separator=",",
+            has_header=True,
+            quote_char='"',
+            schema=pl.Schema(
+                {
+                    "filename": pl.String,
+                    "gto": pl.Float64,
+                    "human": pl.Float64,
+                }
+            ),
+        )
+        self.expected_ev_list = df[phase.lower()].to_list()
+        self.training_files_list = df["filename"].to_list()
 
     def __len__(self):
         return len(self.expected_ev_list)

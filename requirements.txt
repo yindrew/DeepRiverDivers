@@ -2,3 +2,5 @@ torch
 pytest
 numpy
 scipy
+
+polars

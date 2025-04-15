@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from enum import Enum
+from typing import override
 
 
 class Action(Enum):
@@ -38,7 +39,8 @@ class GameAction:
     player: Player
     street: Street
     actor: Actor
-    
+
+    @override
     def __str__(self) -> str:
         """Return a string representation of the game action."""
         amount_str = f" {self.amount:.1f}" if self.amount > 0 else ""
@@ -54,18 +56,18 @@ class HandHistory:
     hand: list[str]
     board: list[str]
     gameLog: list[GameAction]
-    
+
+    @override
     def __str__(self) -> str:
         """Return a string representation of the hand history."""
         # Format the hand
         hand_str = "".join(self.hand)
-        
+
         # Format the board
         board_str = " ".join(self.board) if self.board else "No board"
-        
+
         # Format the game log
         game_log_str = "\n  ".join([str(action) for action in self.gameLog])
-        
+
         return f"Hand: {hand_str}\nBoard: {board_str}\nGame Log:\n  {game_log_str}"
 
-    

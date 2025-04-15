@@ -1,8 +1,9 @@
-CO 2.5 SB 10. CO c. 
+SB
+CO 2.5 SB 10 CO c
 
-6h3s3h. 11.8. c. 
-Qd. 25. c. 
-6s. x. all in 53.
+6h3s3h 11.8 c
+Qd 25 c
+6s x 53
 
 AKss -.27
 AKhh 0

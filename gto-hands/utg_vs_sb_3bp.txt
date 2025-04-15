@@ -1,8 +1,9 @@
-UTG 2. SB 10. UTG c. 
+SB
+UTG 2 SB 10 UTG c
 
-Td7h3h. 10.5 c. 
-Qc 13.85 c. 
-4c. x. all in 65.65.
+Td7h3h 10.5 c
+Qc 13.85 c
+4c x 65.65
 
 AAsc 50.45
 AKhh -32.68
@@ -17,7 +18,7 @@ A4hh -4.47
 A3ss -1.93
 A3dd 0
 A3cc -5.12
-AsKh -26.88
+AKsh -26.88
 AKch -27.67
 KJhh -53.58
 KTss 2.13

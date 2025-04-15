@@ -1,10 +1,11 @@
-SB c. BB 3. SB 14. BB c.
+SB
+SB c BB 3 SB 14 BB c
 
-8d4s4h. 14. c. 
-Jh. x. 18.5 c. 
-5c. x. 53.5. 
+8d4s4h 14 c
+Jh x 18.5 c
+5c x 53.5
 
-AAsh 93.36 
+AAsh 93.36
 AAsd 95.37
 AAhd 98.54
 AAsc 93.07

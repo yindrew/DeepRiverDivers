@@ -1,8 +1,9 @@
-HJ 2. BB c. 
+BB
+HJ 2 BB c
 
-QhTd4h. x. 1.5. 9. c. 
-5h. 7.4. c. 
-2s. 13. 81.6.
+QhTd4h x 1.5 9 c 
+5h 7.4 c
+2s 13 81.6
 
 AJhh 131.3
 ATss -14.95

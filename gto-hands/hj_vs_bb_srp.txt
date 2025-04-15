@@ -1,8 +1,9 @@
-HJ 2. BB c.
+HJ
+HJ 2 BB c
 
-QhTd4h. x. 1.5. 9. c. 
-3d. x. 11.25. c. 
-8h. 77.75. 
+QhTd4h x 1.5 9 c 
+3d x 11.25 c 
+8h 77.75 
 
 AAsh 22.75
 AAsd -4.53

@@ -1,8 +1,9 @@
-HJ 2. BTN c. 
+HJ
+HJ 2 BU c
 
-AhKsTs. 2.75. c. 
-3d. 13.75. c. 
-7c. 81.5. 
+AhKsTs 2.75 c 
+3d 13.75 c 
+7c 81.5 
 
 AQss 0
 AQdd 0

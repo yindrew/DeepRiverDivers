@@ -1,8 +1,9 @@
-UTG 2. CO 6.5 UTG 18. CO c.
+CO
+UTG 2 CO 6.5 UTG 18 CO c
 
-322ddc. x. x. 
-Tc. 18.75. c. 
-2s. 63.25. 
+3d2d2c x x 
+Tc 18.75 c 
+2s 63.25 
 
 AAsh 119.27
 AAsd 134.25
@@ -49,10 +50,11 @@ KQdd -59.03
 KQcc -35.27
 KJdd -61.22
 KJcc -55.66
-QQ 55.05
-QQ 35.62
+QQsd 55.05
+QQsh 35.62
 QQsc 58.04
 QQhc 58.04
+QQhd 40.35
 QQdc 35.48
 JJsh 16.44
 JJsd 4.48

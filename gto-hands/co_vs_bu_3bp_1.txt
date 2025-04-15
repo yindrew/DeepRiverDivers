@@ -1,8 +1,9 @@
-CO 2.3 BU 7.5. CO c.
+CO
+CO 2.3 BU 7.5 CO c
 
-Tc5h2h. x. 5.45. c. 
-Jd. x. 13.7. c. 
-Ah. x. 73.35. 
+Tc5h2h x 5.45 c 
+Jd x 13.7 c 
+Ah x 73.35 
 
 AQss 0.01
 AQdd -0.29

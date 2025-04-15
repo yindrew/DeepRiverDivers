@@ -1,8 +1,9 @@
-BU 2.5 SB 12. BU c. 
+BU
+BU 2.5 SB 12 BU c
 
-Ts5h3c. 12.5. c. 
-7d. 25. c. 
-Kd. 50.5. 
+Ts5h3c 12.5 c
+7d 25 c
+Kd 50.5
 
 AAsh 84.89
 AAsd 88.17

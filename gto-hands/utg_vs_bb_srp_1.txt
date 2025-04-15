@@ -1,8 +1,9 @@
-UTG 2. BB c. 
+BB
+UTG 2 BB c 
 
-AhKs3d. x. 1.8. c. 
-7h. x. 16.8. c. 
-3s. x. 78.9. 
+AhKs3d x 1.8 c 
+7h x 16.8 c 
+3s x 78.9 
 
 AQss -.14
 AQcc -.07
@@ -39,7 +40,7 @@ AKsd 50.01
 AKsc 49.96
 AKdh 52.31
 AKdc 52.78
-Akch 51.58
+AKch 51.58
 AKcd 52.09
 KJhh -3.85
 KThh -3.08
@@ -49,10 +50,10 @@ K7dd 0.01
 K7cc -0.01
 K6hh -5.32
 K5hh -5.4
-K4s 3-.81
+K4ss -3.81
 K3cc 70.99
 K2hh -5.61
-Aqsh -0.01
+AQsh -0.01
 AQsd 0
 AQsc 0
 AQds 0
@@ -76,11 +77,11 @@ ATsh .03
 ATsd -.01
 ATsc -.01
 ATds 0
-Atdh -0.04
+ATdh -0.04
 ATdc 0
 ATcs 0
 ATch 0
 ATdc 0
-77 72.6
+77ds 72.6
 53hh 62.49
 63hh 62.52

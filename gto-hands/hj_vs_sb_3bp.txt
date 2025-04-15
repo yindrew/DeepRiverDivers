@@ -1,15 +1,16 @@
-HJ 2. SB 11. HJ c. 
+HJ
+HJ 2 SB 11 HJ c
 
-Kh8h3h. 4.6. c. 
-4d. 24.15. c. 
-5h. 60.25. 
+Kh8h3h 4.6 c 
+4d 24.15 c 
+5h 60.25 
 
 AQhh 136.75 
 AJhh 136.75
 AThh 136.75
 AKhs 136.75
 AKsd -10.44
-AKc -10.44
+AKcd -10.44
 AKhd 136.75
 AKhc 136.75
 AKds -8.3

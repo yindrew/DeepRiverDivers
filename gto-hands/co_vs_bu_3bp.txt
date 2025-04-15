@@ -1,19 +1,19 @@
-CO 2.5 BU 7.5 CO c.
+CO
+CO 2.5 BU 7.5 CO c
 
-Th8h7h. x. 5.45. c. 
-6h. x. 23.45. c. 
-2h. x. 63.6.
+Th8h7h x 5.45 c 
+6h x 23.45 c 
+2h x 63.6
 
 AQhh 78.23
 AJhh 84.83
 A9hh 137.3
 A5hh 77.97
-K5hh 5.91
 K9hh 137.3
 KJhh 6.05
-K9h 137.3
+K9hh 137.3
 K5hh 5.91
-AQsq -1.43
+AQsh -1.43
 AQhs 69.73 
 AQhd 69.73
 AQhc 69.73
@@ -25,7 +25,6 @@ KQhd 0
 KQhc 0
 KQdh 0
 KQch 0
-
 QJhh 3.67
 Q9hh 137.3
 AJsh 0
@@ -69,9 +68,4 @@ T8cc -30.78
 33sh 2.43
 33hc 2.43
 33hd 2.43
-
-
-
-60 individual hands for $15 
-
 

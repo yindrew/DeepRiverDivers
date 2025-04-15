@@ -1,8 +1,9 @@
-CO 2.5 BTN 7.5 CO 22. BTN c.
+BU
+CO 2.5 BU 7.5 CO 22 BU c
 
-QdJd5c. 10.25. c. 
-4s. x. 24.7. c. 
-Kh. 43. 
+QdJd5c 10.25 c 
+4s x 24.7 c 
+Kh 43
 
 AAsh 0
 AAsd 0
@@ -52,7 +53,7 @@ QQsc 120.49
 QQhc 120.49
 QJss 9.85
 QJhh 6.81
-QHcc 6.28
+QJcc 6.28
 88sd -43.09
 88hd -43.09
 88dc -43.09

@@ -1,8 +1,9 @@
-BU 2.5 BB c. 
+BB
+BU 2.5 BB c
 
-Ks8h3d. x. 1.8. 10.9 c. 
-4s 18. c.
-9h. X. all in 68.6.
+Ks8h3d x 1.8 10.9 c
+4s 18 c
+9h x 68.6
 
 A2ss -29.72
 A2hh -31.92
@@ -18,7 +19,7 @@ A6ss -34.86
 A7ss -29.72
 A8ss -0.03
 A8dd 9.05
-A8cc 3/27
+A8cc 3.27
 A9ss -8.71
 ATss -35.07
 K3hh 47.51
@@ -53,7 +54,7 @@ Q7ss -37.56
 JTss -42.19
 K9ss -5.79
 J7ss -42.19
-T0ss -3.64
+T9ss -3.64
 T7ss -42.55
 97ss 0
 96ss -3.5

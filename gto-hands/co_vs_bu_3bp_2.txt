@@ -1,8 +1,9 @@
-CO 2.3 BU 7.5 CO c. 
+CO
+CO 2.3 BU 7.5 CO c
 
-QsQcJd x. 5.45. c. 
-8s. x. 13.7 c. 
-Ah. x. 73.35
+QsQcJd x 5.45 c
+8s x 13.7 c 
+Ah x 73.35
 
 AQdd 116.01
 AJss 0

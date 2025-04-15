@@ -1,8 +1,9 @@
-UTG 2. BB c. 
+BB
+UTG 2 BB c
 
-Ks7h2c. x. 1.5 c. 
-Td. x. 5.6 c. 
-Ts. x. 15.5. 90.9
+Ks7h2c x 1.5 c 
+Td x 5.6 c
+Ts x 15.5 90.9
 
 AAsh 2.34
 AAsd 2.33
@@ -12,7 +13,7 @@ AAhc 2.34
 AAcd 2.34
 AKdd 0.16
 AKhh 0.05
-AKc 0.1
+AKcc 0.1
 AJss -75.4
 AJhh -75.4
 AJcc -75.4

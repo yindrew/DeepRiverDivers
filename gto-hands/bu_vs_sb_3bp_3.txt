@@ -1,8 +1,9 @@
-BU 2.5 SB 12. BU c.
+BU
+BU 2.5 SB 12 BU c
 
-KhTs4d. 5. c. 
-7s. 11.5 c. 
-2h. all in 71.45
+KhTs4d 5 c
+7s 11.5 c
+2h 71.45
 
 AAsh 124.89
 AAsd 124.89

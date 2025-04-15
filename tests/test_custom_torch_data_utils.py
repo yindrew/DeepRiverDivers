@@ -4,7 +4,7 @@ from models.full_model import FullModel
 from models.model_config import ModelConfig
 from utils.custom_torch_data_utils import (
     CollateFnForJSONDatasetType,
-    JSONDatasetBase,
+    JSONDataset,
     JSONDatasetType,
 )
 
@@ -14,14 +14,14 @@ class TestCustomTorchDatasets:
         # NOTE: Need to update
         config = ModelConfig()
         config.training_process["batch_size"] = 16
-        dataset = JSONDatasetBase(config)
-        # dataloader: DataLoader[JSONDatasetType] = DataLoader(
-        #     dataset,
-        #     batch_size=config.training_process["batch_size"],
-        #     shuffle=True,
-        #     num_workers=2,
-        #     collate_fn=CollateFnForJSONDatasetType,
-        # )
+        dataset = JSONDataset(config)
+        dataloader: DataLoader[JSONDatasetType] = DataLoader(
+            dataset,
+            batch_size=config.training_process["batch_size"],
+            shuffle=True,
+            num_workers=2,
+            collate_fn=CollateFnForJSONDatasetType,
+        )
 
         # # test if forward works
         # model = FullModel(config=config)

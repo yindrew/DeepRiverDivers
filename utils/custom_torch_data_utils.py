@@ -23,13 +23,15 @@ class JSONDatasetTypeCollated(TypedDict):
     actions_mask: torch.BoolTensor
 
 
-class JSONDatasetBase(Dataset[JSONDatasetType]):
+class JSONDataset(Dataset[JSONDatasetType]):
     """
     torch.utils.Dataset for loading json files, assuming each
     json contains one action and on hand seq (like hand1.json).
 
-    This basic one loads from the same file 500 times.
-    torch.utils.data has other variants of Dataset classes.
+    This class utilizes the data directory (in this repository).
+
+    Input:
+        train_or_validate (Literal["Training", "Validation"])
 
     Attributes:
         root_dir (pathlib.Path): root directory for json files

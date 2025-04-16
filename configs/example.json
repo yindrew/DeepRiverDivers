@@ -1,0 +1,11 @@
+{
+  "general": {
+    "device": "cuda"
+  },
+  "training_process": {
+    "dataset": "GTO",
+    "optimizer": "AdamW",
+    "num_epochs": 2,
+    "warm_start": true
+  }
+}

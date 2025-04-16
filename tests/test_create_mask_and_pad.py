@@ -1,6 +1,6 @@
 import torch
 
-from utils.create_mask_and_pad import MaskerPadder
+from utils.mask_and_pad import MaskerPadder
 
 
 class TestCreateMask:

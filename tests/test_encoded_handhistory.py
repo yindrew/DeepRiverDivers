@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from models.encoded_handhistory import EncodedHandHistory
-from models.handhistory import Action, Actor, GameAction, HandHistory, Player, Street
+from schemas.hand_history import Action, Actor, GameAction, HandHistory, Player, Street
 
 
 class TestEncodedHandHistory:

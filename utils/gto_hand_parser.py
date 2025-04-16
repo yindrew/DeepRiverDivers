@@ -1,32 +1,15 @@
 from pathlib import Path
 
-from models.encoded_handhistory import EncodedHandHistory, EncodedHandHistoryType
-from models.handhistory import Action, Actor, GameAction, HandHistory, Player, Street
-
-
-def load_gto_hands(data_dir: str) -> list[tuple[HandHistory, float]]:
-    """
-    Load all GTO hand text files from a directory.
-
-    Args:
-        data_dir: Directory containing GTO hand text files
-
-    Returns:
-        List of (HandHistory, expected_value) tuples
-    """
-    parser = GTOHandParser()
-    all_hand_histories = []
-
-    data_path = Path(data_dir)
-    for txt_file in data_path.glob("*.txt"):
-        hand_histories = parser.parse_hand_file(str(txt_file))
-        all_hand_histories.extend(hand_histories)
-
-    return all_hand_histories
+from models.encoded_handhistory import EncodedHandHistory
+from schemas.dataloader_datatypes import DatasetBaseType
+from schemas.hand_history import Action, Actor, GameAction, HandHistory, Player, Street
 
 
 class GTOHandParser:
-    """Parser for GTO hand text files with structured format."""
+    """
+    Parser for GTO hand text files with structured format.
+    Main function parse_hand_file parses a GTO txt file.
+    """
 
     def __init__(self):
 
@@ -294,9 +277,7 @@ class GTOHandParser:
         )
         return board, actions
 
-    def parse_hand_file(
-        self, file_path: str
-    ) -> list[tuple[EncodedHandHistoryType, float]]:
+    def parse_hand_file(self, file_path: str) -> list[DatasetBaseType]:
         """Parse a GTO hand text file.
         Format:
         Line 1: Hero position (e.g., "BU")
@@ -337,7 +318,7 @@ class GTOHandParser:
         game_log = preflop_actions + flop_actions + turn_actions + river_actions
 
         # Parse EV lines
-        hand_histories: list[tuple[EncodedHandHistoryType, float]] = []
+        hand_histories: list[DatasetBaseType] = []
         for line in lines[6:]:
             if not line:
                 continue
@@ -354,6 +335,16 @@ class GTOHandParser:
             hand = [rank1 + suit1, rank2 + suit2]
             hand_history = HandHistory(hand=hand, board=board, gameLog=game_log)
             encoded_hand_history = EncodedHandHistory.encode_hand_history(hand_history)
-            hand_histories.append((encoded_hand_history, ev))
+            hand_histories.append(
+                {"expected_ev": ev, "encoded_hand_history": encoded_hand_history}
+            )
 
         return hand_histories
+
+
+def load_gto_hands(path: Path) -> list[DatasetBaseType]:
+    parser = GTOHandParser()
+    hand_histories: list[DatasetBaseType] = []
+    for txt_file in path.glob("*.txt"):
+        hand_histories.extend(parser.parse_hand_file(str(path / txt_file)))
+    return hand_histories

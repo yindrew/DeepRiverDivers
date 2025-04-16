@@ -3,7 +3,7 @@ from typing import override
 import torch
 import torch.nn as nn
 
-from models.model_config import ModelConfig
+from schemas.model_config import ModelConfig
 
 from .cross_attention_bidirectional import CrossAttentionBidirectional
 from .encoders import ActionSequenceEncoder, CardSequenceEncoder

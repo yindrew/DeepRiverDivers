@@ -1,16 +1,18 @@
 import json
-from typing import TypedDict
 
 import torch
 
-from models.handhistory import Action, Actor, GameAction, HandHistory, Player, Street
+from schemas.hand_history import (
+    Action,
+    Actor,
+    EncodedHandHistoryType,
+    GameAction,
+    HandHistory,
+    Player,
+    Street,
+)
 
 
-class EncodedHandHistoryType(TypedDict):
-    actions: torch.LongTensor
-    cards: torch.LongTensor
-
-   
 class EncodedHandHistory:
     """
     Functional class for encoding HandHistory objects into neural network input format.
@@ -214,34 +216,36 @@ class EncodedHandHistory:
     def decode_to_string(cls, encoded_hand: EncodedHandHistoryType) -> str:
         """
         Convert encoded tensors back to a human-readable string format.
-        
+
         Args:
             encoded_hand: Dictionary containing encoded actions and cards tensors
-            
+
         Returns:
             A formatted string showing the decoded hand history
         """
         # Decode cards
         cards_str = []
-        for card in encoded_hand['cards']:
+        for card in encoded_hand["cards"]:
             rank_idx, suit_idx, street_idx = card.tolist()
-            
+
             # Convert indices back to human-readable format
             rank_map_reverse = {v: k for k, v in cls.RANK_MAP.items()}
             suit_map_reverse = {v: k for k, v in cls.SUIT_MAP.items()}
             street_map_reverse = {v: k for k, v in cls.CARD_STREET_MAP.items()}
-            
+
             rank = rank_map_reverse[rank_idx]
             suit = suit_map_reverse[suit_idx]
             street = street_map_reverse[street_idx].capitalize()
-            
+
             cards_str.append(f"{rank}{suit} ({street})")
-            
+
         # Decode actions
         actions_str = []
-        for action in encoded_hand['actions']:
-            actor_idx, action_idx, bet_size_idx, street_idx, position_idx = action.tolist()
-            
+        for action in encoded_hand["actions"]:
+            actor_idx, action_idx, bet_size_idx, street_idx, position_idx = (
+                action.tolist()
+            )
+
             # Convert indices back to human-readable format
             actor = "Hero" if actor_idx == 0 else "Villain"
             action_map_reverse = {v.value: v.name for v in Action}
@@ -250,20 +254,26 @@ class EncodedHandHistory:
             street = street_map_reverse[street_idx]
             position_map_reverse = {v.value: v.name.replace("_", " ") for v in Player}
             position = position_map_reverse[position_idx]
-            
+
             # Format bet size
             if street_idx == 0:  # Preflop
                 bet_size = "standard sizing"
             else:  # Postflop
                 if bet_size_idx < len(cls.POSTFLOP_BET_BUCKETS):
                     bucket = cls.POSTFLOP_BET_BUCKETS[bet_size_idx]
-                    bet_size = f"{bucket*100:.0f}% pot" if bucket != float("inf") else "all-in"
+                    bet_size = (
+                        f"{bucket*100:.0f}% pot" if bucket != float("inf") else "all-in"
+                    )
                 else:
                     bet_size = "unknown sizing"
-            
-            actions_str.append(f"{street}: {position} {action_name} ({bet_size}) as {actor}")
-            
+
+            actions_str.append(
+                f"{street}: {position} {action_name} ({bet_size}) as {actor}"
+            )
+
         return (
-            "Cards:\n  " + "\n  ".join(cards_str) +
-            "\n\nActions:\n  " + "\n  ".join(actions_str)
+            "Cards:\n  "
+            + "\n  ".join(cards_str)
+            + "\n\nActions:\n  "
+            + "\n  ".join(actions_str)
         )

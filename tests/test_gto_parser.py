@@ -1,6 +1,8 @@
-from load_gto_data import GTOHandParser, load_gto_hands
-from models.handhistory import HandHistory, GameAction, Action, Player, Street, Actor
+from pathlib import Path
+
 from models.encoded_handhistory import EncodedHandHistory
+from schemas.hand_history import Action, Actor, GameAction, HandHistory, Player, Street
+from utils.gto_hand_parser import GTOHandParser, load_gto_hands
 
 
 def test_preflop_parser():
@@ -17,7 +19,7 @@ def test_preflop_parser():
     assert actions[1].action == Action.RAISE
     assert actions[1].amount == 0
     assert actions[1].player == Player.SMALL_BLIND
-    assert actions[1].actor == Actor.VILLAIN   
+    assert actions[1].actor == Actor.VILLAIN
 
     assert actions[2].action == Action.CALL
     assert actions[2].amount == 0
@@ -26,7 +28,6 @@ def test_preflop_parser():
 
     assert parser.pot_size == 25
     assert parser.villain == Player.SMALL_BLIND
-
 
     parser.hero = Player.BIG_BLIND
     actions = parser.parse_preflop_action("BU 2.5 BB 12 BU c")
@@ -66,7 +67,8 @@ def test_flop_parser():
     assert actions[3].actor == Actor.HERO
 
     assert round(parser.pot_size, 1) == 27.2
-    
+
+
 def test_turn_parser():
     parser = GTOHandParser()
     parser.hero = Player.DEALER
@@ -82,17 +84,17 @@ def test_turn_parser():
     assert actions[0].actor == Actor.VILLAIN
 
     assert actions[1].action == Action.BET
-    assert actions[1].amount == .5
+    assert actions[1].amount == 0.5
     assert actions[1].player == Player.DEALER
     assert actions[1].actor == Actor.HERO
 
     assert actions[2].action == Action.RAISE
-    assert round(actions[2].amount, 2) == .43
+    assert round(actions[2].amount, 2) == 0.43
     assert actions[2].player == Player.SMALL_BLIND
     assert actions[2].actor == Actor.VILLAIN
 
     assert actions[3].action == Action.CALL
-    assert round(actions[3].amount, 2) == .22
+    assert round(actions[3].amount, 2) == 0.22
     assert actions[3].player == Player.DEALER
     assert actions[3].actor == Actor.HERO
 
@@ -117,24 +119,30 @@ def test_pot_size():
     assert actions[1].actor == Actor.HERO
 
     assert actions[2].action == Action.RAISE
-    assert actions[2].amount == .5
+    assert actions[2].amount == 0.5
     assert actions[2].player == Player.SMALL_BLIND
     assert actions[2].actor == Actor.VILLAIN
 
     assert parser.pot_size == 110
 
 
-    
 def test_whole_hand_parser():
     parser = GTOHandParser()
-    hand_histories = parser.parse_hand_file("gto-hands/bu_vs_bb_3bp.txt")
-    encoded_hand, ev = hand_histories[1]
+    hand_histories = parser.parse_hand_file("data/gto/bu_vs_bb_3bp.txt")
+    encoded_hand, ev = (
+        hand_histories[1]["encoded_hand_history"],
+        hand_histories[1]["expected_ev"],
+    )
     print(f"\nHand History (EV: {ev}):")
     print(EncodedHandHistory.decode_to_string(encoded_hand))
 
 
 def test_all_hands():
-    hand_histories = load_gto_hands("gto-hands")
-    encoded_hand, ev = hand_histories[0]
+    path = Path(__file__).parent.parent / "data" / "gto"
+    hand_histories = load_gto_hands(path)
+    encoded_hand, ev = (
+        hand_histories[0]["encoded_hand_history"],
+        hand_histories[0]["expected_ev"],
+    )
     print(f"\nHand History (EV: {ev}):")
     print(EncodedHandHistory.decode_to_string(encoded_hand))

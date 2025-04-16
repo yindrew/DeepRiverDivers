@@ -212,9 +212,10 @@ class Trainer:
         checkpoint_dir = (
             self.base_path / "checkpoints" / self.config.general["checkpoint_name"]
         )
+        print(checkpoint_dir)
         checkpoint_path = checkpoint_dir / f"{postfix}.pth"
         if not os.path.exists(checkpoint_dir):
-            os.makedirs(checkpoint_path)
+            os.makedirs(checkpoint_dir)
         checkpoint_dict: CheckpointDict = {
             "model_state_dict": self.model.state_dict(),
             "optimizer_state_dict": self.optim.state_dict(),

@@ -6,6 +6,8 @@ __pycache__/
 # C extensions
 *.so
 
+Ignition2.0/
+
 # Distribution / packaging
 .Python
 build/

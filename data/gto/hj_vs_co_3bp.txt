@@ -1,0 +1,62 @@
+HJ
+HJ 2 CO 6.5 HJ c 
+
+7h5d5c x 7.25 c 
+Jh x 21.75 c 
+Qd x 64.5
+
+AQhh 47.41
+AJss .23
+AJdd .34
+AJcc 1.96
+AThh -47.55
+A9hh -46.78
+A5ss -111.83
+A5hh 110.62
+KQhh 29.25
+KJss 2.37
+KJdd 1.76
+KJcc 2.5
+KThh -60.3
+JJsd 126.15
+JJsc 126.04
+JJdc 126.13
+TTsh 0
+TTsd 0
+TThd 0
+TTsc 0
+TThc 0
+TTdc 0
+99sh -1.32
+99sd 0
+99hd -1.3
+99sc 0
+99hc -1.29
+99dc 0
+88sh -.1
+88sd -.05
+88hd -.07
+88sc -.05
+88hc -.06
+88dc -.05
+97ss 0
+97dd .04
+97cc .07
+87ss .44
+87dd .53
+87cc .53
+77sd 123.2
+77sc 123.2
+77dc 123.2
+76ss 1.24
+76dd .72
+76cc .73
+66sh .49
+66sd 0
+66hd 0
+66sc 0
+66hc 0
+66dc -.48
+55sh 136.4
+65ss 112.82
+65hh 112.63

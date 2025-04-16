@@ -1,0 +1,12 @@
+{
+  "general": {
+    "device": "cuda",
+    "checkpoint_name": "example"
+  },
+  "training_process": {
+    "dataset": "GTO",
+    "optimizer": "AdamW",
+    "num_epochs": 2,
+    "warm_start": false
+  }
+}

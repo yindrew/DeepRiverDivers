@@ -44,12 +44,15 @@ class TrainingProcessConfig(TypedDict):
     weight_decay: float
     optimizer: Literal["Adam", "SGD", "AdamW"]
     momentum: float
-    phase: Literal["GTO", "Human"]
+    dataset: Literal["GTO", "Human"]
+    warm_start: bool
+    p_train_test_split: float
 
 
 class GeneralConfig(TypedDict):
     device: Literal["cpu", "cuda"]
     seed: int
+    checkpoint_name: str
 
 
 @dataclass
@@ -58,7 +61,11 @@ class ModelConfig:
 
     # General Config
     general: GeneralConfig = field(
-        default_factory=lambda: {"device": "cpu", "seed": 42069}
+        default_factory=lambda: {
+            "device": "cpu",
+            "seed": 42069,
+            "checkpoint_name": "default",
+        }
     )
 
     # Training Process Config
@@ -70,7 +77,9 @@ class ModelConfig:
             "weight_decay": 0,
             "optimizer": "Adam",
             "momentum": 0,
-            "phase": "GTO",
+            "dataset": "GTO",
+            "warm_start": False,
+            "p_train_test_split": 0.1,
         }
     )
 

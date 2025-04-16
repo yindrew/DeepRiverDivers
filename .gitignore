@@ -177,3 +177,4 @@ cython_debug/
 
 # ignore checkpoints unless explicitly added
 checkpoints/
+data/

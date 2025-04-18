@@ -2,14 +2,22 @@ from collections.abc import Sequence
 from math import floor
 from pathlib import Path
 from typing import Literal, override
+import json
 
-import polars as pl
 import torch
 from torch.utils.data import Dataset, Subset
 
 from models.encoded_handhistory import EncodedHandHistory
 from schemas.dataloader_datatypes import DatasetBaseCollatedType, DatasetBaseType
-from schemas.hand_history import EncodedHandHistoryType
+from schemas.hand_history import (
+    Action,
+    Actor,
+    EncodedHandHistoryType,
+    GameAction,
+    HandHistory,
+    Player,
+    Street,
+)
 from utils.gto_hand_parser import GTOHandParser
 from utils.mask_and_pad import MaskerPadder
 
@@ -36,49 +44,58 @@ def collate_fn_datasetbasetype(
 
 class HumanDataset(Dataset[DatasetBaseType]):
     """
-    torch.utils.Dataset for loading json files, assuming each
-    json contains one action and on hand seq (like hand1.json).
+    torch.utils.Dataset for loading a single JSON file containing multiple hands.
+    Each hand in the JSON should have a hand history and expected value.
 
     This class utilizes the data directory (in this repository).
-
-    Input:
-        train_or_validate (Literal["Training", "Validation"])
 
     Attributes:
         root_dir (pathlib.Path): root directory for json files
         expected_ev_list (list[float]): list of "ground truth" expected values
-        training_files_list (list[str]): list of training file names
+        encoded_hands (list[EncodedHandHistoryType]): list of encoded hand histories
     """
 
     root_dir: Path
     expected_ev_list: list[float]
-    training_files_list: list[str]
+    encoded_hands: list[EncodedHandHistoryType]
 
     def __init__(self):
         self.root_dir = Path(__file__).parent.parent / "data" / "human"
-        df: pl.DataFrame = pl.read_csv(
-            source=str(self.root_dir / "metadata.csv"),
-            separator=",",
-            has_header=True,
-            quote_char='"',
-            schema=pl.Schema(
-                {
-                    "filename": pl.String,
-                    "ev": pl.Float64,
-                }
-            ),
-        )
-        self.expected_ev_list = df["ev"].to_list()
-        self.training_files_list = df["filename"].to_list()
+        with open(self.root_dir / "hands.json", 'r') as f:
+            hands_data = json.load(f)
+        
+        self.expected_ev_list = []
+        self.encoded_hands = []
+        
+        for hand in hands_data['hands']:
+            self.expected_ev_list.append(hand['expected_ev'])
+            # Convert dictionary back to HandHistory object
+            hand_dict = hand['hand_history']
+            game_log = [
+                GameAction(
+                    action=Action(action['action']),
+                    amount=action['amount'],
+                    player=Player(action['player']),
+                    street=Street(action['street']),
+                    actor=Actor(action['actor'])
+                )
+                for action in hand_dict['gameLog']
+            ]
+            hand_history = HandHistory(
+                hand=hand_dict['hand'],
+                board=hand_dict['board'],
+                gameLog=game_log
+            )
+            # Encode the hand history
+            self.encoded_hands.append(EncodedHandHistory.encode_hand_history(hand_history))
 
     def __len__(self):
         return len(self.expected_ev_list)
 
     @override
     def __getitem__(self, idx: int) -> DatasetBaseType:
-        json_path = str(self.root_dir / self.training_files_list[idx])
         return {
-            "encoded_hand_history": EncodedHandHistory.from_json(json_path),
+            "encoded_hand_history": self.encoded_hands[idx],
             "expected_ev": self.expected_ev_list[idx],
         }
 

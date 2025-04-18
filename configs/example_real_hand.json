@@ -1,0 +1,12 @@
+{
+  "general": {
+    "device": "cpu",
+    "checkpoint_name": "test_real_hand"
+  },
+  "training_process": {
+    "dataset": "Human",
+    "optimizer": "AdamW",
+    "num_epochs": 10,
+    "warm_start": false
+  }
+}

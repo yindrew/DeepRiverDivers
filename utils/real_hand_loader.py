@@ -3,6 +3,7 @@ import pytest
 from utils.real_hand_extractor import HandHistoryExtractor
 from utils.poker_evaluator import evaluate_hands
 from schemas.hand_history import Action, Actor, GameAction, HandHistory, Player, Street
+from pathlib import Path
 
 def load_real_hands():
     # Initialize the extractor
@@ -12,15 +13,9 @@ def load_real_hands():
     with open('data/human/river_all_in_hands.json', 'r') as f:
         hands_data = json.load(f)
     
-
     all_hands = []
     for i, hand_data in enumerate(hands_data):
-        # print(hand_data['content'])
         actions, board, player_cards, initial_stacks = extractor.extract_hand_history(hand_data['content'])
-        # print("Board:", board)
-        # print("Player cards:", player_cards)
-        #print("Actions:", actions[:-1])
-
 
         if len(actions) == 0:
             continue
@@ -49,7 +44,6 @@ def load_real_hands():
                         pot_size = 2.5
                 break
         
-
         map_action_to_game_action = {
             'Checks': Action.CHECK,
             'Folds': Action.FOLD,
@@ -120,21 +114,14 @@ def load_real_hands():
                 )
                 game_action_list.append(tempAction)
         
-        hero_cards =  player_cards[hero]
+        hero_cards = player_cards[hero]
         hand_history = HandHistory(
             hand=hero_cards,
             board=board,
             gameLog=game_action_list
         )
-        # print(player_cards)
-        # print("This is the hero cards", hero_cards)
-        # print("This is the villain cards", player_cards[villain])
-        # print("This is the board", board)
+        
         hero_score, villain_score = evaluate_hands(hero_cards, player_cards[villain], board)
-        # # print("These are the scores", hero_score, villain_score)
-        # print("hand winner", "hero" if hero_score < villain_score else "villain")
-        # print("pot size", pot_size)
-
 
         if hero_score > villain_score: # if hero hand is worse than villain hand
             call_ev = -actions[-2]['total']
@@ -143,9 +130,33 @@ def load_real_hands():
         else:
             call_ev = 0
         
-        all_hands.append((hand_history, call_ev))
+        # Convert hand history to dictionary format
+        hand_dict = {
+            "hand_history": {
+                "hand": hand_history.hand,
+                "board": hand_history.board,
+                "gameLog": [
+                    {
+                        "action": action.action.value,
+                        "amount": action.amount,
+                        "player": action.player.value,
+                        "street": action.street.value,
+                        "actor": action.actor.value
+                    }
+                    for action in hand_history.gameLog
+                ]
+            },
+            "expected_ev": call_ev
+        }
+        all_hands.append(hand_dict)
 
-    return all_hands
+    # Save all hands to a JSON file
+    output_path = Path('data/human/hands.json')
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    with open(output_path, 'w') as f:
+        json.dump({"hands": all_hands}, f, indent=2)
+    
+    print(f"Saved {len(all_hands)} hands to {output_path}")
 
 if __name__ == "__main__":
     load_real_hands()

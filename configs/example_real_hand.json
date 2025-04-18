@@ -8,6 +8,6 @@
     "dataset": "Human",
     "optimizer": "AdamW",
     "num_epochs": 10,
-    "warm_start": true
+    "warm_start": false
   }
 }

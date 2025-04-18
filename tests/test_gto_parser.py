@@ -69,6 +69,30 @@ def test_flop_parser():
     assert round(parser.pot_size, 1) == 27.2
 
 
+def test_flop_parser_1():
+    parser = GTOHandParser()
+    parser.hero = Player.DEALER
+    parser.villain = Player.SMALL_BLIND
+    parser.pot_size = 5.4
+    board, actions = parser.parse_flop_action("Ks8h3d x 1.8 c")
+    assert len(board) == 3
+    assert len(actions) == 3
+    assert actions[0].action == Action.CHECK
+    assert actions[0].amount == 0
+    assert actions[0].player == Player.SMALL_BLIND
+    assert actions[0].actor == Actor.VILLAIN
+
+    assert actions[1].action == Action.BET
+    assert round(actions[1].amount, 2) == 0.33
+    assert actions[1].player == Player.DEALER
+    assert actions[1].actor == Actor.HERO
+
+    assert actions[2].action == Action.CALL
+    assert round(actions[2].amount, 2) == .25
+    assert actions[2].player == Player.SMALL_BLIND
+    assert actions[2].actor == Actor.VILLAIN
+
+
 def test_turn_parser():
     parser = GTOHandParser()
     parser.hero = Player.DEALER

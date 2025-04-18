@@ -153,6 +153,8 @@ class Trainer:
         with open(json_file, "r") as f:
             config_json_dict = json.load(f)
         for base_key, values in config_json_dict.items():
+            if base_key == "$schema":
+                continue
             config.__setattr__(
                 base_key,
                 config.__getattribute__(base_key) | values,

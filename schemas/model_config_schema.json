@@ -1,0 +1,72 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ModelConfig",
+  "type": "object",
+  "properties": {
+    "general": {
+      "type": "object",
+      "properties": {
+        "device": { "type": "string", "enum": ["cpu", "cuda"] },
+        "seed": { "type": "integer" },
+        "checkpoint_name": { "type": "string" }
+      }
+    },
+    "training_process": {
+      "type": "object",
+      "properties": {
+        "batch_size": { "type": "integer" },
+        "num_epochs": { "type": "integer" },
+        "learning_rate": { "type": "number" },
+        "weight_decay": { "type": "number" },
+        "optimizer": { "type": "string", "enum": ["Adam", "SGD", "AdamW"] },
+        "momentum": { "type": "number" },
+        "dataset": { "type": "string", "enum": ["GTO", "Human"] },
+        "warm_start": { "type": "boolean" },
+        "p_train_test_split": { "type": "number" }
+      }
+    },
+    "action_encoder": {
+      "type": "object",
+      "properties": {
+        "d_model": { "type": "integer" },
+        "nhead": { "type": "integer" },
+        "dim_feedforward": { "type": "integer" },
+        "dropout": { "type": "number" },
+        "num_actions": { "type": "integer" },
+        "num_positions": { "type": "integer" },
+        "num_streets": { "type": "integer" },
+        "action_embedding_dim": { "type": "integer" },
+        "position_embedding_dim": { "type": "integer" },
+        "street_embedding_dim": { "type": "integer" }
+      }
+    },
+    "card_encoder": {
+      "type": "object",
+      "properties": {
+        "d_model": { "type": "integer" },
+        "nhead": { "type": "integer" },
+        "dim_feedforward": { "type": "integer" },
+        "dropout": { "type": "number" },
+        "num_ranks": { "type": "integer" },
+        "num_suits": { "type": "integer" },
+        "num_streets": { "type": "integer" },
+        "rank_embedding_dim": { "type": "integer" },
+        "suit_embedding_dim": { "type": "integer" },
+        "street_embedding_dim": { "type": "integer" }
+      }
+    },
+    "cross_attention": {
+      "type": "object",
+      "properties": {
+        "num_heads": { "type": "integer" },
+        "d_model": { "type": "integer" }
+      }
+    },
+    "output_mlp": {
+      "type": "object",
+      "properties": {
+        "d_model": { "type": "integer" }
+      }
+    }
+  }
+}

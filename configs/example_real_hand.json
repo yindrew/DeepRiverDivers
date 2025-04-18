@@ -1,4 +1,5 @@
 {
+  "$schema": "../schemas/model_config_schema.json",
   "general": {
     "device": "cpu",
     "checkpoint_name": "test_real_hand"
@@ -7,6 +8,6 @@
     "dataset": "Human",
     "optimizer": "AdamW",
     "num_epochs": 10,
-    "warm_start": false
+    "warm_start": true
   }
 }

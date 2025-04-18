@@ -30,11 +30,11 @@ class TrainingHistory:
         match self.stage:
             case "Train":
                 print(
-                    f"Epoch {self.epoch} Training loss: {self.training_loss_in_epochs[-1]}"
+                    f"\t-- Epoch {self.epoch} Training loss: {self.training_loss_in_epochs[-1]}"
                 )
             case "Validate":
                 print(
-                    f"Epoch {self.epoch} Validation loss: {self.validation_loss_in_epochs[-1]}"
+                    f"\t-- Epoch {self.epoch} Validation loss: {self.validation_loss_in_epochs[-1]}"
                 )
 
     @property

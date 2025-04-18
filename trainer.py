@@ -81,6 +81,7 @@ class Trainer:
         for _ in range(self.config.training_process["num_epochs"]):
             self._train_one_epoch()
             self._validate_one_epoch()
+            self._check_and_save_best_checkpoint()
         self._save_checkpoint(postfix="final")
 
     def _train_one_epoch(self) -> None:
@@ -153,10 +154,13 @@ class Trainer:
         with open(json_file, "r") as f:
             config_json_dict = json.load(f)
         for base_key, values in config_json_dict.items():
-            config.__setattr__(
-                base_key,
-                config.__getattribute__(base_key) | values,
-            )
+            try:
+                config.__setattr__(
+                    base_key,
+                    config.__getattribute__(base_key) | values,
+                )
+            except:
+                pass
         return config
 
     def _build_dataloaders(self):
@@ -208,11 +212,16 @@ class Trainer:
             previous_training_history,
         )
 
+    def _check_and_save_best_checkpoint(self) -> None:
+        if self.training_history.validation_loss_in_epochs[-1] <= min(
+            self.training_history.validation_loss_in_epochs
+        ):
+            self._save_checkpoint(postfix="best")
+
     def _save_checkpoint(self, postfix: Literal["best", "final"] = "final") -> None:
         checkpoint_dir = (
             self.base_path / "checkpoints" / self.config.general["checkpoint_name"]
         )
-        print(checkpoint_dir)
         checkpoint_path = checkpoint_dir / f"{postfix}.pth"
         if not os.path.exists(checkpoint_dir):
             os.makedirs(checkpoint_dir)

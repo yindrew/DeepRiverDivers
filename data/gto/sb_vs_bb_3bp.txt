@@ -1,0 +1,73 @@
+SB
+SB 3 BB 10 SB c
+
+8h7d7c x 10 c 
+Qc x 20 c
+9s x 60 
+
+AJhh -1.71 
+AJdd -4.04
+AJcc 0
+ATcc 0
+A9cc 0
+A8ss 0
+A8dd 2.2
+A8cc 1.09
+K8ss 0
+K8dd 0
+K8cc 1.24
+KTcc -29.89
+KJcc -21.93
+KQss 5.85
+KQhh 3.17
+KQdd 5.71
+AQsh 13.11
+AQsd 12.17
+AQhs 19.13
+AQhd 19.33
+AQds 15.19
+AQdh 16.22
+AQcs 16.99
+AQch 17.89
+AQcd 17.01
+KQsh 6.24
+KQsd 5.61
+J8ss -1.91
+J8dd -1.28
+J8cc 1.05
+J9cc 0
+JTcc 132.44
+T9hh -3.69
+T9dd -.31
+98cc 1.74
+98dd 1.19
+88sd 134.61
+88sc 134.56
+88dc 134.57
+87ss 133.05
+77sh 139.4
+66sh -.57
+66sd -2.04
+66hd -1.76
+66sc -.93
+66hc -.64
+66dc -2.09
+65ss 128.77
+65hh 128.94
+65dd 129.03
+55sh -3.92
+55sd -4.19
+55hd -1.38
+55sc -4.34
+55hc -1.52
+55dc -1.79
+44hd -2.3
+44sc -2.65
+44hc -1.59
+44dc -1.69
+33sh -5.22
+33sd -3.61
+33hd -4.38
+33sc -4.04
+33hc -4.82
+33dc -3.22

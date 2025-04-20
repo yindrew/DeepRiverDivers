@@ -13,6 +13,7 @@ sys.path.append(str(Path(__file__).resolve().parent))
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
+from torch.utils.tensorboard import SummaryWriter
 
 from models.full_model import FullModel
 from schemas.checkpoint_dict import CheckpointDict
@@ -41,6 +42,7 @@ class Trainer:
     training_history: TrainingHistory
     base_path: Path
     start_time: float
+    writer: SummaryWriter
 
     def __init__(self, config_filename: str | None = None) -> None:
         self.start_time = time.time()
@@ -54,6 +56,9 @@ class Trainer:
         self.loss_fn = nn.MSELoss()
         self.dataloader_training, self.dataloader_validation, self.dataloader_test = self._build_dataloaders()
         self.training_history = TrainingHistory()
+        
+        # Initialize TensorBoard
+        self.writer = SummaryWriter(f'runs/{self.config.general["checkpoint_name"]}')
 
     def run(self):
         self._init_params()
@@ -97,6 +102,9 @@ class Trainer:
         # Save the final model at the end of training
         self._save_checkpoint(postfix="final")
         print(f"Final model saved with validation loss: {val_loss:.6f}")
+        
+        # Close TensorBoard writer
+        self.writer.close()
 
     def _train_one_epoch(self) -> None:
         _ = self.model.train()

@@ -5,6 +5,8 @@ from typing import List, Dict, Optional
 from dataclasses import dataclass
 from datetime import datetime
 
+from schemas.hand_history import HandHistory
+
 
 """ Used in conjunction with extract_river_hands_from_human_hands.py to generate the river_all_in_hands.json file"""
 class RealHandParser:

@@ -22,7 +22,7 @@ from utils.custom_torch_data_utils import (
     GTODataset,
     HumanDataset,
     collate_fn_datasetbasetype,
-    train_test_split,
+    three_way_split,
 )
 from utils.training_history import TrainingHistory
 
@@ -37,6 +37,7 @@ class Trainer:
     loss_fn: nn.MSELoss
     dataloader_training: DataLoader[DatasetBaseType]
     dataloader_validation: DataLoader[DatasetBaseType]
+    dataloader_test: DataLoader[DatasetBaseType]
     training_history: TrainingHistory
     base_path: Path
     start_time: float
@@ -51,7 +52,7 @@ class Trainer:
         self.model = FullModel(config=self.config)
         self.optim = self._build_optim()
         self.loss_fn = nn.MSELoss()
-        self.dataloader_training, self.dataloader_validation = self._build_dataloaders()
+        self.dataloader_training, self.dataloader_validation, self.dataloader_test = self._build_dataloaders()
         self.training_history = TrainingHistory()
 
     def run(self):
@@ -59,6 +60,10 @@ class Trainer:
         self._log_training_setup()
         self._forward_n_epochs()
         self._log_training_result()
+        
+        # Add final evaluation on test set
+        test_accuracy = self.evaluate_on_test_set()
+        print(f"Final Test Set Accuracy: {test_accuracy:.2%}")
 
     def _init_seed(self) -> None:
         _ = torch.manual_seed(self.config.general["seed"])
@@ -78,10 +83,20 @@ class Trainer:
             self.training_history = previous_training_history
 
     def _forward_n_epochs(self):
-        for _ in range(self.config.training_process["num_epochs"]):
+        best_val_loss = float('inf')
+        for epoch in range(self.config.training_process["num_epochs"]):
             self._train_one_epoch()
-            self._validate_one_epoch()
+            val_loss = self._validate_one_epoch()
+            
+            # Save the best model if validation loss improved
+            if val_loss < best_val_loss:
+                best_val_loss = val_loss
+                self._save_checkpoint(postfix="best")
+                print(f"New best model saved with validation loss: {best_val_loss:.6f}")
+        
+        # Save the final model at the end of training
         self._save_checkpoint(postfix="final")
+        print(f"Final model saved with validation loss: {val_loss:.6f}")
 
     def _train_one_epoch(self) -> None:
         _ = self.model.train()
@@ -98,8 +113,9 @@ class Trainer:
         self.training_history.log_loss_in_epoch()
         self.training_history.update_loss_in_epoch()
 
-    def _validate_one_epoch(self) -> None:
+    def _validate_one_epoch(self) -> float:
         _ = self.model.eval()
+        val_loss = 0.0
         with torch.no_grad():
             for _, data in enumerate(self.dataloader_validation):
                 data: DatasetBaseCollatedType
@@ -107,9 +123,11 @@ class Trainer:
                 loss_in_batch = self._gen_prediction_and_loss(data) / len(
                     self.dataloader_validation
                 )
+                val_loss += loss_in_batch.item()
                 self.training_history.update_loss_in_batch(loss_in_batch)
             self.training_history.log_loss_in_epoch()
             self.training_history.update_loss_in_epoch()
+        return val_loss
 
     def _gen_prediction_and_loss(self, data: DatasetBaseCollatedType) -> torch.Tensor:
         x_actions = data["actions_padded"]
@@ -165,21 +183,43 @@ class Trainer:
         dataset = {"GTO": GTODataset, "Human": HumanDataset}[
             self.config.training_process["dataset"]
         ]()
-        return tuple(
-            DataLoader(
-                dataset,
-                batch_size=self.config.training_process["batch_size"],
-                generator=torch.Generator(device=self.config.general["device"]),
-                shuffle=True,
-                num_workers=0,  # hardcoded, otherwise would sometimes throw errors
-                collate_fn=collate_fn_datasetbasetype,
-            )
-            for dataset_subset in train_test_split(
-                dataset,
-                device=self.config.general["device"],
-                p_train_test_split=self.config.training_process["p_train_test_split"],
-            )
+        
+        # Use three_way_split instead of train_test_split
+        train_dataset, val_dataset, test_dataset = three_way_split(
+            dataset,
+            device=self.config.general["device"],
+            p_train_test_split=self.config.training_process["p_train_test_split"],
         )
+        
+        # Create data loaders for each set
+        train_loader = DataLoader(
+            train_dataset,
+            batch_size=self.config.training_process["batch_size"],
+            generator=torch.Generator(device=self.config.general["device"]),
+            shuffle=True,
+            num_workers=0,
+            collate_fn=collate_fn_datasetbasetype,
+        )
+        
+        val_loader = DataLoader(
+            val_dataset,
+            batch_size=self.config.training_process["batch_size"],
+            generator=torch.Generator(device=self.config.general["device"]),
+            shuffle=False,
+            num_workers=0,
+            collate_fn=collate_fn_datasetbasetype,
+        )
+        
+        test_loader = DataLoader(
+            test_dataset,
+            batch_size=self.config.training_process["batch_size"],
+            generator=torch.Generator(device=self.config.general["device"]),
+            shuffle=False,
+            num_workers=0,
+            collate_fn=collate_fn_datasetbasetype,
+        )
+        
+        return train_loader, val_loader, test_loader
 
     def _load_checkpoint(self):
         checkpoint_path = (
@@ -214,7 +254,8 @@ class Trainer:
         checkpoint_dir = (
             self.base_path / "checkpoints" / self.config.general["checkpoint_name"]
         )
-        print(checkpoint_dir)
+        # Only print the relative path, not the full absolute path
+        print(f"Saving checkpoint to: checkpoints/{self.config.general['checkpoint_name']}/{postfix}.pth")
         checkpoint_path = checkpoint_dir / f"{postfix}.pth"
         if not os.path.exists(checkpoint_dir):
             os.makedirs(checkpoint_dir)
@@ -243,9 +284,46 @@ Training result:
     Ellapsed time: {time.time() - self.start_time} seconds
     Best validation loss: {min(self.training_history.validation_loss_in_epochs)}
 
-Models (best and final) saved in ./checkpoints/{self.config.general["checkpoint_name"]} directory.
+Models saved in ./checkpoints/{self.config.general["checkpoint_name"]} directory:
+    - best.pth: Model with lowest validation loss
+    - final.pth: Model after final training epoch
             """
         )
+
+    def evaluate_on_test_set(self):
+        """Evaluate model performance on the held-out test set"""
+        self.model.eval()
+        correct_decisions = 0
+        total_decisions = 0
+        
+        with torch.no_grad():
+            for data in self.dataloader_test:
+                data = {k: v.to(self.config.general["device"]) for k, v in data.items()}
+                
+                # Get model predictions
+                predicted_ev = self.model(
+                    data["actions_padded"],
+                    data["cards"],
+                    data["actions_mask"]
+                )
+                
+                # Get actual outcomes
+                actual_outcomes = data["expected_ev"] > 0
+                
+                # Model decisions
+                model_decisions = predicted_ev > 0
+                
+                # Calculate correct decisions
+                correct_decisions += (
+                    (model_decisions & actual_outcomes) |  # Correct calls
+                    (~model_decisions & ~actual_outcomes)  # Correct folds
+                ).sum().item()
+                
+                total_decisions += len(predicted_ev)
+        
+        accuracy = correct_decisions / total_decisions
+        print(f"Test Set Decision Accuracy: {accuracy:.2%}")
+        return accuracy
 
 
 if __name__ == "__main__":

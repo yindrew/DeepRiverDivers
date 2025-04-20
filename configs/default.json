@@ -7,14 +7,14 @@
   },
   "training_process": {
     "batch_size": 32,
-    "num_epochs": 6,
+    "num_epochs": 50,
     "learning_rate": 0.001,
-    "weight_decay": 0,
-    "optimizer": "Adam",
+    "weight_decay": 0.01,
+    "optimizer": "AdamW",
     "momentum": 0,
     "dataset": "GTO",
     "warm_start": false,
-    "p_train_test_split": 0.1
+    "p_train_test_split": 0.2
   },
   "action_encoder": {
     "d_model": 32,

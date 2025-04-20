@@ -44,24 +44,14 @@ def collate_fn_datasetbasetype(
 
 class HumanDataset(Dataset[DatasetBaseType]):
     """
-    torch.utils.Dataset for loading a single JSON file containing multiple hands.
-    Each hand in the JSON should have a hand history and expected value.
-
-    This class utilizes the data directory (in this repository).
-
-    Attributes:
-        root_dir (pathlib.Path): root directory for json files
-        expected_ev_list (list[float]): list of "ground truth" expected values
-        encoded_hands (list[EncodedHandHistoryType]): list of encoded hand histories
+    Dataset class for loading and processing human hand histories.
     """
-
-    root_dir: Path
-    expected_ev_list: list[float]
-    encoded_hands: list[EncodedHandHistoryType]
-
-    def __init__(self):
+    def __init__(self, file_path: str | None = None):
         self.root_dir = Path(__file__).parent.parent / "data" / "human"
-        with open(self.root_dir / "hands.json", 'r') as f:
+        self.file_path = file_path or (self.root_dir / "hands_processed.json")
+        
+        print(f"Loading processed hands from {self.file_path}...")
+        with open(self.file_path, 'r') as f:
             hands_data = json.load(f)
         
         self.expected_ev_list = []
@@ -69,25 +59,14 @@ class HumanDataset(Dataset[DatasetBaseType]):
         
         for hand in hands_data['hands']:
             self.expected_ev_list.append(hand['expected_ev'])
-            # Convert dictionary back to HandHistory object
-            hand_dict = hand['hand_history']
-            game_log = [
-                GameAction(
-                    action=Action(action['action']),
-                    amount=action['amount'],
-                    player=Player(action['player']),
-                    street=Street(action['street']),
-                    actor=Actor(action['actor'])
-                )
-                for action in hand_dict['gameLog']
-            ]
-            hand_history = HandHistory(
-                hand=hand_dict['hand'],
-                board=hand_dict['board'],
-                gameLog=game_log
-            )
-            # Encode the hand history
-            self.encoded_hands.append(EncodedHandHistory.encode_hand_history(hand_history))
+            # Convert the stored lists back to tensors
+            encoded_hand = {
+                'actions': torch.tensor(hand['encoded_hand_history']['actions']),
+                'cards': torch.tensor(hand['encoded_hand_history']['cards'])
+            }
+            self.encoded_hands.append(encoded_hand)
+        
+        print(f"Loaded {len(self.expected_ev_list)} hands successfully.")
 
     def __len__(self):
         return len(self.expected_ev_list)
@@ -153,3 +132,37 @@ def train_test_split(
     train_inds = perm[cut_off:]
     test_inds = perm[:cut_off]
     return Subset(dataset, train_inds), Subset(dataset, test_inds)
+
+
+def three_way_split(
+    dataset: Dataset[DatasetBaseType],
+    device: Literal["cpu", "cuda"],
+    p_train_test_split: float = 0.2,
+) -> tuple[Dataset[DatasetBaseType], Dataset[DatasetBaseType], Dataset[DatasetBaseType]]:
+    """
+    Split dataset into training, validation, and test sets.
+    
+    Args:
+        dataset: The dataset to split
+        device: Device to use for the split
+        p_train_test_split: Proportion of data for testing (will be split into val and test)
+        
+    Returns:
+        tuple: (train_dataset, val_dataset, test_dataset)
+    """
+    # First split: separate test+validation from training
+    train_size = 1 - p_train_test_split
+    train, test_val = train_test_split(
+        dataset,
+        device=device,
+        p_train_test_split=p_train_test_split
+    )
+    
+    # Second split: split test_val into validation and test (50/50 of the test portion)
+    val, test = train_test_split(
+        test_val,
+        device=device,
+        p_train_test_split=0.5  # Split the test portion equally
+    )
+    
+    return train, val, test

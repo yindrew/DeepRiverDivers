@@ -1,6 +1,6 @@
 import re
 from typing import List, Optional, Dict
-from schemas.hand_history import HandHistory, GameAction, Action, Actor, Street, Player
+from schemas.hand_history import HandHistory, GameAction, Player
 
 class HandHistoryExtractor:
     """Extracts hand content into HandHistory objects"""
@@ -13,6 +13,16 @@ class HandHistoryExtractor:
         
         self.stakes = None
         self.initial_stacks = {}
+
+
+    map_position_to_player = {
+        "UTG": Player.UTG,
+        "UTG+1": Player.UTG_PLUS_1,
+        "UTG+2": Player.UTG_PLUS_2,
+        "Dealer": Player.DEALER,
+        "Small Blind": Player.SMALL_BLIND,
+        "Big Blind": Player.BIG_BLIND,
+    }
 
     def post_flop_sequencing(self, hero: Player, villain: Player) -> bool:
             """
@@ -172,7 +182,8 @@ class HandHistoryExtractor:
             
             action_data = {
                 'position': position,
-                'action': action_type
+                'action': action_type,
+                'Street': 'River'
             }
 
             if action_type == 'Raises':
@@ -207,9 +218,9 @@ class HandHistoryExtractor:
                 elif numberOfCalls == 2:
                     action_data['Street'] = 'River'
                 # if in position and checks, then move onto next street 
-                if len(actions) >= 1 and not self.post_flop_sequencing(action_data['position'], actions[-1]['position']):
+                if actions and not self.post_flop_sequencing(self.map_position_to_player[action_data['position']], self.map_position_to_player[actions[-1]['position']]):
+                    # Only increment numberOfCalls if this is the second check on this street
                     numberOfCalls += 1
-
             actions.append(action_data)
         return actions
 

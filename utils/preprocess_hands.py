@@ -5,7 +5,7 @@ from schemas.hand_history import Action, Actor, GameAction, HandHistory, Player,
 
 def preprocess_hands():
     # Setup paths
-    root_dir = Path(__file__).parent
+    root_dir = Path(__file__).parent.parent  # Go up one level to project root
     input_path = root_dir / "data" / "human" / "hands.json"
     output_path = root_dir / "data" / "human" / "hands_processed.json"
     

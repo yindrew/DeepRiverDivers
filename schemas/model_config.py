@@ -72,14 +72,14 @@ class ModelConfig:
     training_process: TrainingProcessConfig = field(
         default_factory=lambda: {
             "batch_size": 32,
-            "num_epochs": 6,
+            "num_epochs": 50,
             "learning_rate": 1e-3,
-            "weight_decay": 0,
-            "optimizer": "Adam",
+            "weight_decay": 0.01,
+            "optimizer": "AdamW",
             "momentum": 0,
             "dataset": "GTO",
             "warm_start": False,
-            "p_train_test_split": 0.1,
+            "p_train_test_split": 0.2,
         }
     )
 

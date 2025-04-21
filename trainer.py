@@ -6,7 +6,6 @@ import time
 from pathlib import Path
 from typing import Literal
 
-# add git repo base path to sys.path so python3 {path to this file}
 # can correctly import models
 sys.path.append(str(Path(__file__).resolve().parent))
 
@@ -35,7 +34,7 @@ class Trainer:
     config: ModelConfig
     optim: torch.optim.AdamW | torch.optim.Adam | torch.optim.SGD
     model: FullModel
-    loss_fn: nn.MSELoss
+    loss_fn: nn.MSELoss | nn.HuberLoss
     dataloader_training: DataLoader[DatasetBaseType]
     dataloader_validation: DataLoader[DatasetBaseType]
     dataloader_test: DataLoader[DatasetBaseType]
@@ -53,12 +52,38 @@ class Trainer:
         self._set_device()
         self.model = FullModel(config=self.config)
         self.optim = self._build_optim()
-        self.loss_fn = nn.MSELoss()
+        
+        # Use MSE for GTO data, Huber for human data
+        if self.config.training_process["dataset"] == "GTO":
+            self.loss_fn = nn.MSELoss()
+        else:
+            self.loss_fn = nn.HuberLoss(delta=1.0)  # delta=1.0 is a good default for regression
+            
         self.dataloader_training, self.dataloader_validation, self.dataloader_test = self._build_dataloaders()
-        self.training_history = TrainingHistory()
+        
+        # Initialize training history from checkpoint if doing warm start
+        if self.config.training_process["warm_start"]:
+            checkpoint_dict = self._load_checkpoint_dict()
+            self.training_history = TrainingHistory.from_checkpoint(checkpoint_dict)
+            print(f"Loaded previous model from checkpoint: {self.config.general['load_checkpoint_name']}")
+        else:
+            self.training_history = TrainingHistory()
         
         # Initialize TensorBoard
-        self.writer = SummaryWriter(f'runs/{self.config.general["checkpoint_name"]}')
+        self.writer = SummaryWriter(f'runs/{self.config.general["save_checkpoint_name"]}')
+                
+        # Log hyperparameters
+        self.writer.add_hparams(
+            {
+                "learning_rate": self.config.training_process["learning_rate"],
+                "batch_size": self.config.training_process["batch_size"],
+                "optimizer": self.config.training_process["optimizer"],
+                "weight_decay": self.config.training_process["weight_decay"],
+                "num_epochs": self.config.training_process["num_epochs"],
+                "dataset": self.config.training_process["dataset"],
+            },
+            {"hparam/val_loss": float('inf')}  # Start with infinity, will be updated during training
+        )
 
     def run(self):
         self._init_params()
@@ -78,54 +103,84 @@ class Trainer:
 
     def _init_params(self) -> None:
         if self.config.training_process["warm_start"]:
-            (
-                previous_model_state_dict,
-                previous_optimizer_state_dict,
-                previous_training_history,
-            ) = self._load_checkpoint()
-            self.model.load_state_dict(previous_model_state_dict)
-            self.optim.load_state_dict(previous_optimizer_state_dict)
-            self.training_history = previous_training_history
+            checkpoint_dict = self._load_checkpoint_dict()
+            self.model.load_state_dict(checkpoint_dict["model_state_dict"])
+            self.optim.load_state_dict(checkpoint_dict["optimizer_state_dict"])
 
     def _forward_n_epochs(self):
-        best_val_loss = float('inf')
-        for epoch in range(self.config.training_process["num_epochs"]):
+        patience = self.config.training_process["patience"]
+        min_epochs = self.config.training_process["min_epochs"]
+        patience_counter = 0
+        
+        for _ in range(self.config.training_process["num_epochs"]):
             self._train_one_epoch()
             val_loss = self._validate_one_epoch()
             
-            # Save the best model if validation loss improved
-            if val_loss < best_val_loss:
-                best_val_loss = val_loss
+            # Check if this is a new best validation loss
+            if val_loss < self.training_history.best_validation_loss:
+                self.training_history.best_validation_loss = val_loss
+                self.training_history.best_validation_epoch = self.training_history.epoch
                 self._save_checkpoint(postfix="best")
-                print(f"New best model saved with validation loss: {best_val_loss:.6f}")
+                patience_counter = 0
+            else:
+                patience_counter += 1
+            
+            # Early stopping check - only after min_epochs
+            if self.training_history.epoch >= min_epochs and patience_counter >= patience:
+                print(f"\nEarly stopping triggered")
+                break
         
-        # Save the final model at the end of training
         self._save_checkpoint(postfix="final")
-        print(f"Final model saved with validation loss: {val_loss:.6f}")
+        print(f"\nTraining completed:")
+        print(f"- Total epochs trained: {self.training_history.epoch}")
+        print(f"- Best validation loss: {self.training_history.best_validation_loss:.6f} at epoch {self.training_history.best_validation_epoch}")
         
         # Close TensorBoard writer
         self.writer.close()
 
     def _train_one_epoch(self) -> None:
         _ = self.model.train()
-        for _, data in enumerate(self.dataloader_training):
+        epoch_loss = 0.0
+        correct_predictions = 0
+        total_predictions = 0
+        
+        for batch_idx, data in enumerate(self.dataloader_training):
             data: DatasetBaseCollatedType
             data = {k: v.to(self.config.general["device"]) for k, v in data.items()}
             self.optim.zero_grad()
             loss_in_batch = self._gen_prediction_and_loss(data) / len(
                 self.dataloader_training
             )
-            _ = loss_in_batch.backward()
-            _ = self.optim.step()
+            loss_in_batch.backward()
+            self.optim.step()
             self.training_history.update_loss_in_batch(loss_in_batch)
+            epoch_loss += loss_in_batch.item()
+            
+            # Calculate accuracy metrics
+            with torch.no_grad():
+                y_pred = self.model(data["actions_padded"], data["cards"], data["actions_mask"])
+                y_target = data["expected_ev"]
+                correct_predictions += ((y_pred > 0) == (y_target > 0)).sum().item()
+                total_predictions += y_pred.size(0)
+        
+        # Log epoch-level metrics
+        avg_epoch_loss = epoch_loss / len(self.dataloader_training)
+        epoch_accuracy = correct_predictions / total_predictions if total_predictions > 0 else 0
+        
+        self.writer.add_scalar('Training/EpochLoss', avg_epoch_loss, self.training_history.epoch)
+        self.writer.add_scalar('Training/EpochAccuracy', epoch_accuracy, self.training_history.epoch)
+        
         self.training_history.log_loss_in_epoch()
         self.training_history.update_loss_in_epoch()
 
     def _validate_one_epoch(self) -> float:
         _ = self.model.eval()
         val_loss = 0.0
+        correct_predictions = 0
+        total_predictions = 0
+        
         with torch.no_grad():
-            for _, data in enumerate(self.dataloader_validation):
+            for batch_idx, data in enumerate(self.dataloader_validation):
                 data: DatasetBaseCollatedType
                 data = {k: v.to(self.config.general["device"]) for k, v in data.items()}
                 loss_in_batch = self._gen_prediction_and_loss(data) / len(
@@ -133,6 +188,23 @@ class Trainer:
                 )
                 val_loss += loss_in_batch.item()
                 self.training_history.update_loss_in_batch(loss_in_batch)
+                
+                # Calculate accuracy metrics
+                y_pred = self.model(data["actions_padded"], data["cards"], data["actions_mask"])
+                y_target = data["expected_ev"]
+                correct_predictions += ((y_pred > 0) == (y_target > 0)).sum().item()
+                total_predictions += y_pred.size(0)
+            
+            # Log epoch-level validation metrics
+            avg_val_loss = val_loss / len(self.dataloader_validation)
+            val_accuracy = correct_predictions / total_predictions if total_predictions > 0 else 0
+            
+            self.writer.add_scalar('Validation/EpochLoss', avg_val_loss, self.training_history.epoch)
+            self.writer.add_scalar('Validation/EpochAccuracy', val_accuracy, self.training_history.epoch)
+            
+            # Update hyperparameter metrics with validation loss
+            self.writer.add_scalar('hparam/val_loss', avg_val_loss, self.training_history.epoch)
+            
             self.training_history.log_loss_in_epoch()
             self.training_history.update_loss_in_epoch()
         return val_loss
@@ -229,41 +301,27 @@ class Trainer:
         
         return train_loader, val_loader, test_loader
 
-    def _load_checkpoint(self):
+    def _load_checkpoint_dict(self) -> dict:
+        """Load the checkpoint dictionary without applying it to the model."""
         checkpoint_path = (
             self.base_path
             / "checkpoints"
-            / self.config.general["checkpoint_name"]
-            / "final.pth"
+            / self.config.general["load_checkpoint_name"]
+            / f"{self.config.general['type_of_checkpoint']}.pth"
         )
         if not os.path.exists(checkpoint_path):
             raise FileNotFoundError("No previous checkpoints found.")
-        checkpoint_dict: CheckpointDict = torch.load(
-            checkpoint_path, map_location=self.config.general["device"]
-        )
-        (
-            previous_model_state_dict,
-            previous_optimizer_state_dict,
-            previous_training_history,
-            previous_model_config,  # not returned
-        ) = (
-            checkpoint_dict["model_state_dict"],
-            checkpoint_dict["optimizer_state_dict"],
-            checkpoint_dict["loss_history"],
-            checkpoint_dict["model_config"],
-        )
-        return (
-            previous_model_state_dict,
-            previous_optimizer_state_dict,
-            previous_training_history,
+        
+        return torch.load(
+            checkpoint_path, 
+            map_location=self.config.general["device"],
+            weights_only=False  
         )
 
     def _save_checkpoint(self, postfix: Literal["best", "final"] = "final") -> None:
         checkpoint_dir = (
-            self.base_path / "checkpoints" / self.config.general["checkpoint_name"]
+            self.base_path / "checkpoints" / self.config.general["save_checkpoint_name"]
         )
-        # Only print the relative path, not the full absolute path
-        print(f"Saving checkpoint to: checkpoints/{self.config.general['checkpoint_name']}/{postfix}.pth")
         checkpoint_path = checkpoint_dir / f"{postfix}.pth"
         if not os.path.exists(checkpoint_dir):
             os.makedirs(checkpoint_dir)
@@ -281,20 +339,19 @@ class Trainer:
 Training general setup:
     Device: {self.config.general["device"]}
     Warm Start: {self.config.training_process["warm_start"]} 
-        (if set to true, loads from [checkpoint_name]__final.pth, where checkpoint_name={self.config.general["checkpoint_name"]})
         """
         )
-
+        if self.config.training_process["warm_start"]:
+            print(f"Loading checkpoint_name={self.config.general['load_checkpoint_name']}")
+        else:
+            print(f"Starting training from scratch")
+        print()
     def _log_training_result(self):
         print(
             f"""
 Training result:
     Ellapsed time: {time.time() - self.start_time} seconds
     Best validation loss: {min(self.training_history.validation_loss_in_epochs)}
-
-Models saved in ./checkpoints/{self.config.general["checkpoint_name"]} directory:
-    - best.pth: Model with lowest validation loss
-    - final.pth: Model after final training epoch
             """
         )
 
@@ -330,7 +387,10 @@ Models saved in ./checkpoints/{self.config.general["checkpoint_name"]} directory
                 total_decisions += len(predicted_ev)
         
         accuracy = correct_decisions / total_decisions
-        print(f"Test Set Decision Accuracy: {accuracy:.2%}")
+        
+        # Log final test accuracy to TensorBoard
+        self.writer.add_scalar('Test/FinalAccuracy', accuracy, 0)
+        
         return accuracy
 
 

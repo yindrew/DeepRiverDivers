@@ -1,0 +1,55 @@
+{
+    "$schema": "../schemas/model_config_schema.json",
+    "general": {
+      "device": "cpu",
+      "seed": 42069,
+      "load_checkpoint_name": "gto_pretraining",
+      "save_checkpoint_name": "real_hand_post_training",
+      "type_of_checkpoint": "final"
+    },
+    "training_process": {
+      "batch_size": 32,
+      "num_epochs": 500,
+      "learning_rate": 0.0005,
+      "weight_decay": 0.01,
+      "optimizer": "AdamW",
+      "momentum": 0,
+      "dataset": "Human",
+      "warm_start": true,
+      "p_train_test_split": 0.2,
+      "min_epochs": 20,
+      "patience": 10
+    },
+    "action_encoder": {
+      "d_model": 32,
+      "nhead": 4,
+      "dim_feedforward": 128,
+      "dropout": 0.1,
+      "num_actions": 5,
+      "num_positions": 6,
+      "num_streets": 5,
+      "action_embedding_dim": 4,
+      "position_embedding_dim": 4,
+      "street_embedding_dim": 4
+    },
+    "card_encoder": {
+      "d_model": 32,
+      "nhead": 4,
+      "dim_feedforward": 128,
+      "dropout": 0.1,
+      "num_ranks": 13,
+      "num_suits": 4,
+      "num_streets": 4,
+      "rank_embedding_dim": 8,
+      "suit_embedding_dim": 4,
+      "street_embedding_dim": 4
+    },
+    "cross_attention": {
+      "num_heads": 4,
+      "d_model": 32
+    },
+    "output_mlp": {
+      "d_model": 32
+    }
+  }
+  

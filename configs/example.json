@@ -2,7 +2,9 @@
   "$schema": "../schemas/model_config_schema.json",
   "general": {
     "device": "cuda",
-    "checkpoint_name": "example"
+    "load_checkpoint_name": "default",
+    "save_checkpoint_name": "default",
+    "type_of_checkpoint": "final"
   },
   "training_process": {
     "dataset": "GTO",

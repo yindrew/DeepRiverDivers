@@ -29,7 +29,7 @@ class FullModel(nn.Module):
                 "encoder_actions": ActionSequenceEncoder(config=config),
                 "encoder_cards": CardSequenceEncoder(config=config),
                 "cross_attention": CrossAttentionBidirectional(config=config),
-                "output_mlp": OutputMLP(),
+                "output_mlp": OutputMLP(config=config),
             }
         )
 

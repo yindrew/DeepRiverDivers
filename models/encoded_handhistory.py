@@ -262,7 +262,7 @@ class EncodedHandHistory:
                 if bet_size_idx < len(cls.POSTFLOP_BET_BUCKETS):
                     bucket = cls.POSTFLOP_BET_BUCKETS[bet_size_idx]
                     bet_size = (
-                        f"{bucket*100:.0f}% pot" if bucket != float("inf") else "all-in"
+                        f"{bucket*100:.0f}% pot" if bucket != float("inf") else "over 2x pot"
                     )
                 else:
                     bet_size = "unknown sizing"

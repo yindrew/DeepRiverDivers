@@ -8,7 +8,9 @@
       "properties": {
         "device": { "type": "string", "enum": ["cpu", "cuda"] },
         "seed": { "type": "integer" },
-        "checkpoint_name": { "type": "string" }
+        "load_checkpoint_name": { "type": "string" },
+        "save_checkpoint_name": { "type": "string" },
+        "type_of_checkpoint": { "type": "string", "enum": ["best", "final"] }
       }
     },
     "training_process": {
@@ -22,7 +24,9 @@
         "momentum": { "type": "number" },
         "dataset": { "type": "string", "enum": ["GTO", "Human"] },
         "warm_start": { "type": "boolean" },
-        "p_train_test_split": { "type": "number" }
+        "p_train_test_split": { "type": "number" },
+        "min_epochs": { "type": "integer" },
+        "patience": { "type": "integer" }
       }
     },
     "action_encoder": {

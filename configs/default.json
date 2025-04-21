@@ -3,18 +3,22 @@
   "general": {
     "device": "cpu",
     "seed": 42069,
-    "checkpoint_name": "default"
+    "load_checkpoint_name": "default",
+    "save_checkpoint_name": "default",
+    "type_of_checkpoint": "final"
   },
   "training_process": {
     "batch_size": 32,
-    "num_epochs": 50,
-    "learning_rate": 0.001,
+    "num_epochs": 300,
+    "learning_rate": 0.0005,
     "weight_decay": 0.01,
     "optimizer": "AdamW",
     "momentum": 0,
     "dataset": "GTO",
     "warm_start": false,
-    "p_train_test_split": 0.2
+    "p_train_test_split": 0.2,
+    "min_epochs": 100,
+    "patience": 50
   },
   "action_encoder": {
     "d_model": 32,

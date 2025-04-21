@@ -77,16 +77,15 @@ class ModelConfig:
         default_factory=lambda: {
             "learning_rate": 1e-4,
             "batch_size": 32,
-            "num_epochs": 6,
+            "num_epochs": 50,
             "learning_rate": 1e-3,
-            "weight_decay": 0,
+            "weight_decay": 0.01,
             "optimizer": "AdamW",
             "momentum": 0,
             "dataset": "GTO",
             "p_train_test_split": 0.2,
             "warm_start": False,
-            "min_epochs": 50,
-            "patience": 20,
+            "p_train_test_split": 0.2,
         }
     )
 

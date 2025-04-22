@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Literal, TypedDict, Any
+from typing import Literal, TypedDict
 
 
 class ActionEncoderConfig(TypedDict):
@@ -47,14 +47,16 @@ class TrainingProcessConfig(TypedDict):
     dataset: Literal["GTO", "Human"]
     warm_start: bool
     p_train_test_split: float
-    min_epochs: int
     patience: int
+    min_epochs: int
 
 
 class GeneralConfig(TypedDict):
     device: Literal["cpu", "cuda"]
     seed: int
-    checkpoint_name: str
+    load_checkpoint_name: str
+    save_checkpoint_name: str
+    type_of_checkpoint: str
 
 
 @dataclass
@@ -68,24 +70,24 @@ class ModelConfig:
             "seed": 42069,
             "load_checkpoint_name": "default",
             "save_checkpoint_name": "default",
-            "type_of_checkpoint": "final"
+            "type_of_checkpoint": "final",
         }
     )
 
     # Training Process Config
     training_process: TrainingProcessConfig = field(
         default_factory=lambda: {
-            "learning_rate": 1e-4,
             "batch_size": 32,
-            "num_epochs": 50,
-            "learning_rate": 1e-3,
+            "num_epochs": 300,
+            "learning_rate": 5e-4,
             "weight_decay": 0.01,
             "optimizer": "AdamW",
             "momentum": 0,
             "dataset": "GTO",
             "p_train_test_split": 0.2,
             "warm_start": False,
-            "p_train_test_split": 0.2,
+            "min_epochs": 100,
+            "patience": 50,
         }
     )
 

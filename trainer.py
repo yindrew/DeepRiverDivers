@@ -25,6 +25,7 @@ from utils.custom_torch_data_utils import (
     three_way_split,
 )
 from utils.training_history import TrainingHistory
+from utils.visualization import plot_all_metrics
 
 torch.serialization.add_safe_globals([TrainingHistory, ModelConfig])
 
@@ -34,7 +35,7 @@ class Trainer:
     config: ModelConfig
     optim: torch.optim.AdamW | torch.optim.Adam | torch.optim.SGD
     model: FullModel
-    loss_fn: nn.MSELoss | nn.HuberLoss
+    loss_fn: nn.MSELoss | nn.BCEWithLogitsLoss
     dataloader_training: DataLoader[DatasetBaseType]
     dataloader_validation: DataLoader[DatasetBaseType]
     dataloader_test: DataLoader[DatasetBaseType]
@@ -53,11 +54,11 @@ class Trainer:
         self.model = FullModel(config=self.config)
         self.optim = self._build_optim()
         
-        # Use MSE for GTO data, Huber for human data
+        # Use MSE for GTO data, BCEWithLogitsLoss for human data
         if self.config.training_process["dataset"] == "GTO":
             self.loss_fn = nn.MSELoss()
         else:
-            self.loss_fn = nn.HuberLoss(delta=1.0)  # delta=1.0 is a good default for regression
+            self.loss_fn = nn.BCEWithLogitsLoss()  # For binary classification
             
         self.dataloader_training, self.dataloader_validation, self.dataloader_test = self._build_dataloaders()
         
@@ -94,6 +95,11 @@ class Trainer:
         # Add final evaluation on test set
         test_accuracy = self.evaluate_on_test_set()
         print(f"Final Test Set Accuracy: {test_accuracy:.2%}")
+        
+        # Create plots directory and save visualizations
+        plots_dir = self.base_path / "plots" / self.config.general["save_checkpoint_name"]
+        plots_dir.mkdir(parents=True, exist_ok=True)
+        plot_all_metrics(self.training_history, str(plots_dir))
 
     def _init_seed(self) -> None:
         _ = torch.manual_seed(self.config.general["seed"])
@@ -160,7 +166,12 @@ class Trainer:
             with torch.no_grad():
                 y_pred = self.model(data["actions_padded"], data["cards"], data["actions_mask"])
                 y_target = data["expected_ev"]
-                correct_predictions += ((y_pred > 0) == (y_target > 0)).sum().item()
+                if self.config.training_process["dataset"] == "Human":
+                    y_pred = torch.sigmoid(y_pred)
+                    predictions = (y_pred > 0.5).float()
+                else:
+                    predictions = (y_pred > 0).float()
+                correct_predictions += (predictions == (y_target > 0).float()).sum().item()
                 total_predictions += y_pred.size(0)
         
         # Log epoch-level metrics
@@ -170,6 +181,7 @@ class Trainer:
         self.writer.add_scalar('Training/EpochLoss', avg_epoch_loss, self.training_history.epoch)
         self.writer.add_scalar('Training/EpochAccuracy', epoch_accuracy, self.training_history.epoch)
         
+        self.training_history.update_accuracy_in_epoch(epoch_accuracy)
         self.training_history.log_loss_in_epoch()
         self.training_history.update_loss_in_epoch()
 
@@ -192,7 +204,12 @@ class Trainer:
                 # Calculate accuracy metrics
                 y_pred = self.model(data["actions_padded"], data["cards"], data["actions_mask"])
                 y_target = data["expected_ev"]
-                correct_predictions += ((y_pred > 0) == (y_target > 0)).sum().item()
+                if self.config.training_process["dataset"] == "Human":
+                    y_pred = torch.sigmoid(y_pred)
+                    predictions = (y_pred > 0.5).float()
+                else:
+                    predictions = (y_pred > 0).float()
+                correct_predictions += (predictions == (y_target > 0).float()).sum().item()
                 total_predictions += y_pred.size(0)
             
             # Log epoch-level validation metrics
@@ -205,6 +222,7 @@ class Trainer:
             # Update hyperparameter metrics with validation loss
             self.writer.add_scalar('hparam/val_loss', avg_val_loss, self.training_history.epoch)
             
+            self.training_history.update_accuracy_in_epoch(val_accuracy)
             self.training_history.log_loss_in_epoch()
             self.training_history.update_loss_in_epoch()
         return val_loss
@@ -215,6 +233,11 @@ class Trainer:
         x_actions_mask = data["actions_mask"]
         y_target = data["expected_ev"]
         y_pred = self.model(x_actions, x_cards, x_actions_mask)
+        
+        # For human data, convert targets to binary (0 or 1)
+        if self.config.training_process["dataset"] == "Human":
+            y_target = (y_target > 0).float()  # Convert to binary: 1 for positive EV, 0 for negative
+            
         loss_in_batch = self.loss_fn(y_pred, y_target)
         return loss_in_batch
 
@@ -351,7 +374,9 @@ Training general setup:
             f"""
 Training result:
     Ellapsed time: {time.time() - self.start_time} seconds
-    Best validation loss: {min(self.training_history.validation_loss_in_epochs)}
+    Best validation loss: {self.training_history.best_validation_loss:.6f} at epoch {self.training_history.best_validation_epoch}
+    Final training accuracy: {self.training_history.training_accuracy_in_epochs[-1]:.2%}
+    Final validation accuracy: {self.training_history.validation_accuracy_in_epochs[-1]:.2%}
             """
         )
 
@@ -375,8 +400,13 @@ Training result:
                 # Get actual outcomes
                 actual_outcomes = data["expected_ev"] > 0
                 
-                # Model decisions
-                model_decisions = predicted_ev > 0
+                # Model decisions - handle both regression and classification cases
+                if self.config.training_process["dataset"] == "GTO":
+                    # For GTO data (regression), use raw output
+                    model_decisions = predicted_ev > 0
+                else:
+                    # For Human data (classification), use sigmoid output
+                    model_decisions = torch.sigmoid(predicted_ev) > 0.5
                 
                 # Calculate correct decisions
                 correct_decisions += (

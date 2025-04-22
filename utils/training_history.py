@@ -9,6 +9,8 @@ class TrainingHistory:
     stage: Literal["Train", "Validate"] = "Train"
     training_loss_in_epochs: list[float] = field(default_factory=lambda: [0.0])
     validation_loss_in_epochs: list[float] = field(default_factory=lambda: [])
+    training_accuracy_in_epochs: list[float] = field(default_factory=lambda: [])
+    validation_accuracy_in_epochs: list[float] = field(default_factory=lambda: [])
     best_validation_loss: float = float('inf')
     best_validation_epoch: int = 0
     current_epoch: int = 0
@@ -26,6 +28,8 @@ class TrainingHistory:
             history = checkpoint_dict["loss_history"]
             instance.training_loss_in_epochs = history.training_loss_in_epochs
             instance.validation_loss_in_epochs = history.validation_loss_in_epochs
+            instance.training_accuracy_in_epochs = history.training_accuracy_in_epochs
+            instance.validation_accuracy_in_epochs = history.validation_accuracy_in_epochs
             
             # Set best validation loss from previous history
             if instance.validation_loss_in_epochs:
@@ -42,6 +46,13 @@ class TrainingHistory:
                 self.training_loss_in_epochs[-1] += loss_in_batch.item()
             case "Validate":
                 self.validation_loss_in_epochs[-1] += loss_in_batch.item()
+
+    def update_accuracy_in_epoch(self, accuracy: float):
+        match self.stage:
+            case "Train":
+                self.training_accuracy_in_epochs.append(accuracy)
+            case "Validate":
+                self.validation_accuracy_in_epochs.append(accuracy)
 
     def update_loss_in_epoch(self):
         match self.stage:

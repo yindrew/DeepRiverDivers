@@ -3,8 +3,8 @@
     "general": {
       "device": "cpu",
       "seed": 42069,
-      "load_checkpoint_name": "gto_pretraining",
-      "save_checkpoint_name": "real_hand_post_training",
+      "load_checkpoint_name": "",
+      "save_checkpoint_name": "real_hand",
       "type_of_checkpoint": "final"
     },
     "training_process": {
@@ -15,7 +15,7 @@
       "optimizer": "AdamW",
       "momentum": 0,
       "dataset": "Human",
-      "warm_start": true,
+      "warm_start": false,
       "p_train_test_split": 0.2,
       "min_epochs": 150,
       "patience": 30

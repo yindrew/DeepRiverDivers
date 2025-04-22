@@ -181,3 +181,4 @@ cython_debug/
 checkpoints/
 
 runs/
+plots/

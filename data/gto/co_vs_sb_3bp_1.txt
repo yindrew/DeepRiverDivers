@@ -1,0 +1,74 @@
+CO
+CO 2.5 SB 10 CO c
+
+As9h3h 4.8 16.55
+7d x 28.55 c 
+Td x 43.4 
+
+AAhd 157
+AAhc 157
+AAdc 157
+AKhh 28.5
+AQhh 5.85
+AQdd 10.6
+AQcc 10.59
+AJhh 1.32
+AJdd .09
+AJcc .1
+AThh 75.61
+ATcc 76.14
+A8hh -.56
+A7hh 57.49
+A5hh .43
+A5dd -1.02
+A5cc -1.01
+A4hh .59
+A4dd -2.17
+A4cc -2.16
+K9ss 3.04
+K9dd 2.86
+K9cc 3.1
+KThh -7.36
+KKsh -4.18
+KKsd .31
+KKhd -5.17
+KKsc .31
+KKhc -5.17
+KKdc -.84
+AKdh 41.08
+AKch 41.04
+AQhs 6.14
+AQhd 5.38
+AQhc 5.38
+AQds 11.24
+AQdh 7.62
+AQdc 10.43
+AQcs 11.22
+AQch 7.6
+AQcd 10.43
+QQhd -3.36
+QQhc -3.36
+QQdc -4.28
+QJhh -42.97
+QThh -3.99
+J9ss -1.57
+J9dd -.57
+J9cc -.42
+JThh -5.81
+AJhs 1.27
+AJhd 1.32
+AJhc 1.32
+AJds .04
+AJdh .09
+AJdc .09
+AJcs .05
+AJch .1
+AJcd .1
+T9cc 94.24
+99sd 154.41
+99sc 154.35
+99dc 154.22
+87hh -13.62
+77sh 118.26
+77hc 118.83
+65hh -43.4

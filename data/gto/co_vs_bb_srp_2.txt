@@ -1,0 +1,64 @@
+BB
+CO 2.3 BB c 
+
+Qs9h7h x x  
+Td x 3.8 16.5 c 
+4c 13.5 81.2 
+
+AJss -66.24
+AJdd -66.23
+AJcc -66.23
+KJss 88.68
+KJhh 87.99
+KJdd 83.26
+KJcc 83.44
+KTss -65.9
+KTcc -65.92
+AJsd -66.24
+AJsc -66.23
+AJds -66.24
+AJdc -66.23
+AJcs -66.24
+AJcd -66.24
+KJsh 85.17 
+KJsd 84.74
+KJsc 84.67
+KJhs 81.4
+KJhd 83.74
+KJhc 83.62
+KJds 82.62
+KJdh 83.77
+KJdc 83.2
+KJcs 82.88
+KJch 84
+KJcd 83.53
+JTss -64.28
+J6hh -67.7
+J5hh -67.7
+J3hh -67.7
+T6ss -65.32
+T6cc -65.32
+T8ss -65.3
+T8cc -65.62
+TTsh 0
+TTsc 0
+TThc 0
+JTsh -64.28
+JTsc -64.28
+KTsh -65.9
+KTsc -65.9
+KTds -65.66
+KTdh -65.66
+KTdc -65.66
+KTcs -65.92
+KTch -65.92
+99sd 0
+99sc 0
+99dc 0
+85ss -67.7
+85dd -67.7
+77sd 0
+77sc 0
+77dc 0
+65hh -67.7
+63hh -67.7

@@ -35,7 +35,6 @@ class EncodedHandHistory:
         "8": 6,
         "9": 7,
         "T": 8,
-        "10": 8,
         "J": 9,
         "Q": 10,
         "K": 11,
@@ -223,8 +222,21 @@ class EncodedHandHistory:
         Returns:
             A formatted string showing the decoded hand history
         """
-        # Decode cards
-        cards_str = []
+        # Initialize street-based card and action storage
+        street_cards = {
+            "hole": [],
+            "flop": [],
+            "turn": [],
+            "river": []
+        }
+        street_actions = {
+            "PREFLOP": [],
+            "FLOP": [],
+            "TURN": [],
+            "RIVER": []
+        }
+
+        # Decode cards and group by street
         for card in encoded_hand["cards"]:
             rank_idx, suit_idx, street_idx = card.tolist()
 
@@ -235,13 +247,18 @@ class EncodedHandHistory:
 
             rank = rank_map_reverse[rank_idx]
             suit = suit_map_reverse[suit_idx]
-            street = street_map_reverse[street_idx].capitalize()
+            street = street_map_reverse[street_idx]
 
-            cards_str.append(f"{rank}{suit} ({street})")
+            street_cards[street].append(f"{rank}{suit}")
 
-        # Decode actions
-        actions_str = []
-        for action in encoded_hand["actions"]:
+        # Decode actions and group by street
+        mask = encoded_hand.get("mask", None)
+        
+        for i, action in enumerate(encoded_hand["actions"]):
+            # Skip padded actions using mask
+            if mask is not None and mask[i]:
+                continue
+                
             actor_idx, action_idx, bet_size_idx, street_idx, position_idx = (
                 action.tolist()
             )
@@ -267,13 +284,35 @@ class EncodedHandHistory:
                 else:
                     bet_size = "unknown sizing"
 
-            actions_str.append(
-                f"{street}: {position} {action_name} ({bet_size}) as {actor}"
-            )
+            action_str = f"{position} {action_name} ({bet_size}) as {actor}"
+            street_actions[street].append(action_str)
 
-        return (
-            "Cards:\n  "
-            + "\n  ".join(cards_str)
-            + "\n\nActions:\n  "
-            + "\n  ".join(actions_str)
-        )
+        # Build the output string
+        output = []
+        
+        # Hole cards
+        output.append(f"hole cards: {', '.join(street_cards['hole'])}")
+        
+        # Preflop actions
+        if street_actions["PREFLOP"]:
+            output.append(f"preflop: ({'; '.join(street_actions['PREFLOP'])})")
+        
+        # Flop
+        flop_str = f"flop: {' '.join(street_cards['flop'])}"
+        if street_actions["FLOP"]:
+            flop_str += f" | ({'; '.join(street_actions['FLOP'])})"
+        output.append(flop_str)
+        
+        # Turn
+        turn_str = f"turn: {', '.join(street_cards['turn'])}"
+        if street_actions["TURN"]:
+            turn_str += f" | ({'; '.join(street_actions['TURN'])})"
+        output.append(turn_str)
+        
+        # River
+        river_str = f"river: {', '.join(street_cards['river'])}"
+        if street_actions["RIVER"]:
+            river_str += f" | ({'; '.join(street_actions['RIVER'])})"
+        output.append(river_str)
+
+        return "\n".join(output)

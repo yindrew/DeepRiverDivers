@@ -1,0 +1,85 @@
+HJ
+HJ 2 BB c
+
+Jh7d3s x 1.5 5.25 c 
+8c 11.25 c 
+7c x 32.5 81.5
+
+AAsh -.01
+AAsd -.01
+AAhd .03
+AJss -.55
+AJcc -6.35
+ATss -49
+AThh -49
+ATdd -49
+A9ss -49
+A9hh -49
+A9dd -49
+A7ss 2.43
+A7hh .04
+A3hh -49
+A3cc -49
+K7ss 2.48
+K7hh .04
+K9ss -49
+K9hh -49
+K9dd -49
+KTss -49
+KThh -49
+KTdd -49
+KTcc -49
+KKsh .04
+KKsd .04
+KKhd .04
+KKsc .04
+KKhc .04
+KKdc .04
+QQsh .04
+QQsd .04
+QQhd .04
+QQsc .04
+QQhc .04
+QQdc .04
+QTss -49
+QThh -49
+QTdd -49
+QTcc -49
+Q9ss -49
+Q9hh -49
+Q9dd -49
+AJcs -.55
+JJsd 150.9
+JJsc 150.9
+JJdc 150.9
+J9ss .48
+J9cc -22.56
+J8ss 17.8
+J8dd .14
+QTsc -49
+QThc -49
+QTdc -49
+QTcs -49
+QTch -49
+QTcd -49
+T9ss -.04
+T9hh -.04
+T9dd -.06
+T9cc -.08
+99sc -48.96
+99hc -48.96
+98ss -48.98
+98hh -49
+98dd -48.98
+97ss 2.05
+97hh -.06
+88sh 11.29
+88sd -.07
+88hd 3.27
+87ss 4.21
+87hh 4.7
+77sh 150.9
+65ss -49
+65hh -49
+65dd -49
+65cc -49
